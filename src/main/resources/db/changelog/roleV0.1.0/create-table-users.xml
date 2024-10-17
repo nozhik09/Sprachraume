@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="13.10.2024create-table-users " author="vladn09">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="nickname" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="email" type="varchar(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="surname" type="varchar(64)"/>
+            <column name="password" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birthday_date" type="date"/>
+            <column name="native_language" type="varchar(64)"/>
+            <column name="learning_language" type="varchar(64)"/>
+            <column name="skill_level" type="varchar(32)"/>
+            <column name="foto" type="varchar(256)"/>
+            <column name="rating" type="bigint"/>
+            <column name="internal_currency" type="varchar(64)"/>
+            <column name="status" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+
+    </changeSet>
+</databaseChangeLog>
