@@ -4,10 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="master" author="vladn09">
+    <changeSet id="change-colum-nickname-dropnullable" author="vladn09">
+        <modifyDataType tableName="users" columnName="nickname" newDataType="varchar(64)"/>
+        <dropNotNullConstraint tableName="users" columnName="nickname" columnDataType="varchar(64)"/>
 
     </changeSet>
-
-    <include file="roleV0.1.0/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="v.0.1.1/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

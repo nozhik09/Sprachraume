@@ -1,8 +1,9 @@
 package com.example.Sprachraume.UserData.controller;
 
 
-import com.example.Sprachraume.UserData.Exceptions.ApiExceptionHanding;
+import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
+import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
 
-    @Operation(summary = "Регистрация пользователя", description = "Доступно всем")
+    @Operation(summary = "User registration", description = "Available to everyone")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
                     description = "User is registered",
@@ -41,6 +44,38 @@ public class UserController {
         return userService.registerNewUser(requestDto);
     }
 
+
+    @Operation(summary = "Get All Users", description = "Available to Admin")
+    @GetMapping
+    public List<UserData> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @Operation(summary = "Get User by Id", description = "Available to ??")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "User found",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "User not Found", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ApiExceptionHanding.class)))})
+    @GetMapping("/{id}")
+    public UserData getUserById(@PathVariable(name = "id") Long id) {
+        return userService.gitUserById(id);
+    }
+
+
+    @Operation(summary = "Update user data", description = "User/Admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "User update date", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "User Not Found", content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ApiExceptionHanding.class)))
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/update")
+    public UserData updateUser(UserUpdateRequestDto requestDto) {
+        return userService.updateUser(requestDto);
+    }
 
 
 }

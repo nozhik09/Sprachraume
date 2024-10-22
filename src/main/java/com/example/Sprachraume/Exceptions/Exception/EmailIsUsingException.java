@@ -1,6 +1,6 @@
-package com.example.Sprachraume.UserData.Exceptions.Exception;
+package com.example.Sprachraume.Exceptions.Exception;
 
-import com.example.Sprachraume.UserData.Exceptions.GenerateApiException;
+import com.example.Sprachraume.Exceptions.GenerateApiException;
 
 public class EmailIsUsingException extends GenerateApiException {
     public EmailIsUsingException(String message) {

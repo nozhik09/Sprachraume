@@ -1,4 +1,4 @@
-package com.example.Sprachraume.UserData.Exceptions;
+package com.example.Sprachraume.Exceptions;
 
 
 import lombok.AllArgsConstructor;
