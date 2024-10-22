@@ -1,10 +1,7 @@
-package com.example.Sprachraume.UserData.Exceptions;
+package com.example.Sprachraume.Exceptions;
 
 
-import com.example.Sprachraume.UserData.Exceptions.Exception.EmailIsNotValid;
-import com.example.Sprachraume.UserData.Exceptions.Exception.EmailIsUsingException;
-import com.example.Sprachraume.UserData.Exceptions.Exception.InvalidRoleException;
-import com.example.Sprachraume.UserData.Exceptions.Exception.PasswordIsNotValid;
+import com.example.Sprachraume.Exceptions.Exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +28,30 @@ public class AdviceExceptionController {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(PasswordIsNotValid.class)
-    public ResponseEntity<ApiExceptionHanding> passwordIsNotValid(PasswordIsNotValid e) {
+    public ResponseEntity<ApiExceptionHanding> PasswordIsNotValid(PasswordIsNotValid e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.toString()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiExceptionHanding> UserNotFoundException(UserNotFoundException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ApiExceptionHanding> TokenExpiredException(TokenExpiredException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserIsBlocking.class)
+    public ResponseEntity<ApiExceptionHanding> userForbidden(UserIsBlocking e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.FORBIDDEN.toString()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidPassword.class)
+    public ResponseEntity<ApiExceptionHanding> InvalidPassword(InvalidPassword e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
 
 
 }
