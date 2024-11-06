@@ -37,6 +37,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/update}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/room").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/participant/{participantId}/accept").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/participant/{participantId}/decline").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
