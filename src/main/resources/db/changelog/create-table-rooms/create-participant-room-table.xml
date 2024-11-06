@@ -4,11 +4,15 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="master" author="vladn09">
+    <changeSet id="create-participant-room-table v2" author="vladn09">
+        <createTable tableName="participant_room">
+            <column name="room_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="participant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
     </changeSet>
-
-    <include file="roleV0.1.0/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="v.0.1.1/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="create-table-rooms/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

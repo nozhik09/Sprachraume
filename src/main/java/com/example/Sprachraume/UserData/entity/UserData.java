@@ -2,6 +2,7 @@ package com.example.Sprachraume.UserData.entity;
 
 
 import com.example.Sprachraume.Role.Role;
+import com.example.Sprachraume.Rooms.entity.Room;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -65,11 +66,14 @@ public class UserData implements UserDetails {
     @Column(name = "status")
     private Boolean status;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role",
             joinColumns = @JoinColumn(name = "users_id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Room> createdRooms;
 
 
     @Override

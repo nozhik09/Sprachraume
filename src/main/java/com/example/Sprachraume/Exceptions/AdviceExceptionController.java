@@ -54,4 +54,10 @@ public class AdviceExceptionController {
     }
 
 
+    @ExceptionHandler(RoomNotFoundException.class)
+    public ResponseEntity<ApiExceptionHanding> roomNotFound(RoomNotFoundException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
+
+
 }
