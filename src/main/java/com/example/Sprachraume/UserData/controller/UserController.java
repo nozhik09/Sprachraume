@@ -73,7 +73,7 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/update")
-    public UserData updateUser(UserUpdateRequestDto requestDto) {
+    public UserData updateUser(@RequestBody UserUpdateRequestDto requestDto) {
         return userService.updateUser(requestDto);
     }
 
