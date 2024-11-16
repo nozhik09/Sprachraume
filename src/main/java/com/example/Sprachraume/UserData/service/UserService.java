@@ -79,6 +79,13 @@ public class UserService implements UserDetailsService {
     }
 
     public UserData updateUser(UserUpdateRequestDto requestDto) {
+        if(requestDto==null){
+            throw new IllegalArgumentException("Request cannot be empty");
+        }
+        if(requestDto.getId()==null){
+            throw new IllegalArgumentException("Request cannot be empty");
+        }
+
         UserData userData = userRepository.findById(requestDto.getId()).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", requestDto.getId())));
 
         userData.setNickname(requestDto.getNickName());
