@@ -4,12 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="master" author="vladn09">
+    <changeSet id="languages" author="admin">
 
     </changeSet>
-
-    <include file="roleV0.1.0/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="v.0.1.1/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="create-table-rooms/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="create-table-languages/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="db/changelog/create-table-languages/create-table-languages.xml"/>
+    <include file="db/changelog/create-table-languages/change-table-userData.xml"/>
+    <include file="db/changelog/create-table-languages/create-keys-user-languages.xml"/>
 </databaseChangeLog>

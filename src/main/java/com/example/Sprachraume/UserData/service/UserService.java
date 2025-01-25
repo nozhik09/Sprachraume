@@ -2,6 +2,8 @@ package com.example.Sprachraume.UserData.service;
 
 
 import com.example.Sprachraume.Exceptions.Exception.*;
+import com.example.Sprachraume.Languages.entity.Languages;
+import com.example.Sprachraume.Languages.repository.LanguagesRepository;
 import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Role.repository.RoleRepository;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +28,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final LanguagesRepository languagesRepository;
 
 
     public UserData registerNewUser(UserRequestDto requestDto) {
@@ -79,24 +83,26 @@ public class UserService implements UserDetailsService {
     }
 
     public UserData updateUser(UserUpdateRequestDto requestDto) {
-        if(requestDto==null){
+        if (requestDto == null) {
             throw new IllegalArgumentException("Request cannot be empty");
         }
-        if(requestDto.getId()==null){
+        if (requestDto.getId() == null) {
             throw new IllegalArgumentException("Request cannot be empty");
         }
 
         UserData userData = userRepository.findById(requestDto.getId()).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", requestDto.getId())));
-
+        if (requestDto.getBirthdayDate() != null) {
+            LocalDate minimumDate = LocalDate.now().minusYears(8);
+            if (requestDto.getBirthdayDate().isAfter(minimumDate)) {
+                throw new IllegalArgumentException("User must be at least 8 years old");
+            }
+        }
         userData.setNickname(requestDto.getNickName());
         userData.setName(requestDto.getName());
         userData.setSurname(requestDto.getSurname());
         userData.setFoto(requestDto.getFoto());
         userData.setBirthdayDate(requestDto.getBirthdayDate());
         userData.setInternalCurrency(requestDto.getInternalCurrency());
-        userData.setLearningLanguage(requestDto.getLearningLanguage());
-        userData.setNativeLanguage(requestDto.getNativeLanguage());
-        userData.setSkillLevel(requestDto.getSkillLevel());
         userRepository.save(userData);
         return userData;
     }

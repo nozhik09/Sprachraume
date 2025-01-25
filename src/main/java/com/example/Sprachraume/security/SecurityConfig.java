@@ -43,12 +43,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/room").permitAll()
                         .requestMatchers(HttpMethod.POST, "/participant/{participantId}/accept").permitAll()
                         .requestMatchers(HttpMethod.POST, "/participant/{participantId}/decline").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/language/native").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/language").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login/google")
-                        .defaultSuccessUrl("/home", true))
+//                .oauth2Login(oauth2 -> oauth2
+//                        .loginPage("/login/google")
+//                        .defaultSuccessUrl("/home", true))
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -58,7 +60,7 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Разрешаем доступ с вашего React приложения
+        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // Разрешаем доступ с вашего React приложения
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

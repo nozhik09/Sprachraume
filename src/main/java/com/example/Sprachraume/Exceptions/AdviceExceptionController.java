@@ -23,6 +23,11 @@ public class AdviceExceptionController {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(LanguageIsAdded.class)
+    public ResponseEntity<ApiExceptionHanding> emailIsUsing(LanguageIsAdded e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(InvalidRoleException.class)
     public ResponseEntity<ApiExceptionHanding> invalidRole(InvalidRoleException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
