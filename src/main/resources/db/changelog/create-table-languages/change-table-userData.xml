@@ -4,12 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="master" author="vladn09">
-
+    <changeSet id="24.01.2025-drop-columns-from-users" author="admin">
+        <dropColumn tableName="users" columnName="learning_language"/>
+        <dropColumn tableName="users" columnName="native_language"/>
+        <dropColumn tableName="users" columnName="skill_level"/>
     </changeSet>
-
-    <include file="roleV0.1.0/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="v.0.1.1/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="create-table-rooms/changelog.xml" relativeToChangelogFile="true"/>
-    <include file="create-table-languages/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

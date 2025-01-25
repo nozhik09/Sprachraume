@@ -1,17 +1,21 @@
 package com.example.Sprachraume.UserData.entity;
 
 
+import com.example.Sprachraume.Languages.entity.Languages;
 import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Rooms.entity.Room;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,15 +49,6 @@ public class UserData implements UserDetails {
     @Column(name = "birthday_date")
     private LocalDate birthdayDate;
 
-    @Column(name = "native_language")
-    private String nativeLanguage;
-
-    @Column(name = "learning_language")
-    private String learningLanguage;
-
-    @Column(name = "skill_level")
-    private String skillLevel;
-
     @Column(name = "foto")
     private String foto;
 
@@ -65,6 +60,12 @@ public class UserData implements UserDetails {
 
     @Column(name = "status")
     private Boolean status;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_native_languages",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id"))
+    private Set<Languages> nativeLanguages;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role",

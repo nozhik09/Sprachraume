@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="24.01.2025-create-keys-for-languages" author="vladn09">
+        <!-- Foreign key for user_native_languages -->
+        <addForeignKeyConstraint baseTableName="user_native_languages"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_native_languages_to_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+        />
+        <addForeignKeyConstraint baseTableName="user_native_languages"
+                                 baseColumnNames="language_id"
+                                 constraintName="fk_user_native_languages_to_languages"
+                                 referencedTableName="languages"
+                                 referencedColumnNames="id"
+        />
+
+        <!-- Foreign key for user_learning_languages -->
+        <addForeignKeyConstraint baseTableName="user_learning_languages"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_learning_languages_to_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+        />
+        <addForeignKeyConstraint baseTableName="user_learning_languages"
+                                 baseColumnNames="language_id"
+                                 constraintName="fk_user_learning_languages_to_languages"
+                                 referencedTableName="languages"
+                                 referencedColumnNames="id"
+        />
+    </changeSet>
+</databaseChangeLog>
