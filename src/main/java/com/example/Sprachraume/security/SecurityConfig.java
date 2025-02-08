@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/participant/{participantId}/decline").permitAll()
                         .requestMatchers(HttpMethod.POST, "/language/native").permitAll()
                         .requestMatchers(HttpMethod.GET, "/language").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/language/nativeLanguage").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/language/addLearningLanguage").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)

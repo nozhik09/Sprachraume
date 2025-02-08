@@ -1,11 +1,14 @@
 package com.example.Sprachraume.Languages.entity;
 
 
+import com.example.Sprachraume.UserData.entity.UserData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,11 +18,9 @@ public class LearningLanguage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
 
-    @Column(name = "language_id", nullable = false)
-    private Long languageId;
+   @Column(name = "user_id")
+    private Long userId;
 
     @ManyToOne
     @JoinColumn(name = "language_id", nullable = false)
