@@ -2,9 +2,9 @@ package com.example.Sprachraume.UserData.entity;
 
 
 import com.example.Sprachraume.Languages.entity.Languages;
+import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Rooms.entity.Room;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
@@ -65,7 +64,10 @@ public class UserData implements UserDetails {
     @JoinTable(name = "user_native_languages",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "language_id"))
-    private Set<Languages> nativeLanguages;
+    private Set<Languages> nativeLanguages = new HashSet<>();
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<LearningLanguage> learningLanguages = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role",

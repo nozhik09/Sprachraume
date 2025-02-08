@@ -12,4 +12,7 @@
     <include file="v.0.1.1/changelog.xml" relativeToChangelogFile="true"/>
     <include file="create-table-rooms/changelog.xml" relativeToChangelogFile="true"/>
     <include file="create-table-languages/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="add-colum-by-table-languages/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="change-all-table-languages/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="add-colum-by-user-learning-language/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

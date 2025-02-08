@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddLanguageDTO {
+public class AddLearningLanguageDTO {
     private Long userId;
     private String languageName;
     private String skillLevel;
