@@ -1,6 +1,7 @@
 package com.example.Sprachraume.Rooms.service;
 
 
+import com.example.Sprachraume.Exceptions.Exception.InvitationAlreadyResponded;
 import com.example.Sprachraume.Exceptions.Exception.RoomNotFoundException;
 import com.example.Sprachraume.Exceptions.Exception.UserNotFoundException;
 import com.example.Sprachraume.Participant.entity.Participant;
@@ -12,6 +13,8 @@ import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -53,27 +56,34 @@ public class RoomService {
     }
 
     public Participant inviteUserToRoom(Long userId, Long roomID) {
-        Room room = roomRepository.findById(roomID).orElseThrow(() -> new RoomNotFoundException("There is no such room"));
+        Room room = roomRepository.findById(roomID)
+                .orElseThrow(() -> new RoomNotFoundException("There is no such room"));
+
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Participant participant = participantRepository.findByRoomAndUser(room, user)
-                .orElse(null);
 
-        if (participant == null) {
-            // Создание нового приглашения с статусом PENDING
-            participant = new Participant();
-            participant.setRoom(room);
-            participant.setUser(user);
-            participant.setStatus(ParticipantStatus.PENDING);
-            return participantRepository.save(participant);
+        Optional<Participant> optionalParticipant = participantRepository.findByRoomAndUser(room, user);
 
-        } else if (participant.getStatus() == ParticipantStatus.DECLINED) {
-            participant.setStatus(ParticipantStatus.PENDING);
-            return participantRepository.save(participant);
-        } else {
-            throw new IllegalStateException("User already invited or participating");
+        if (optionalParticipant.isPresent()) {
+            Participant participant = optionalParticipant.get();
+
+            // Разрешаем повторное приглашение только если статус DECLINED
+            if (participant.getStatus() == ParticipantStatus.DECLINED) {
+                participant.setStatus(ParticipantStatus.PENDING);
+                return participantRepository.save(participant);
+            } else {
+                throw new InvitationAlreadyResponded("User is already invited or participating");
+            }
         }
+
+        // Если участник еще не приглашен, создаем новое приглашение
+        Participant participant = new Participant();
+        participant.setRoom(room);
+        participant.setUser(user);
+        participant.setStatus(ParticipantStatus.PENDING);
+        return participantRepository.save(participant);
     }
+
 
 
     public Participant acceptInvitation(Long participantId) {
@@ -81,7 +91,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
 
         if (participant.getStatus() != ParticipantStatus.PENDING) {
-            throw new IllegalStateException("Invitation already responded to");
+            throw new InvitationAlreadyResponded("Invitation already responded to");
         }
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
@@ -93,7 +103,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
 
         if (participant.getStatus() != ParticipantStatus.PENDING) {
-            throw new IllegalStateException("Invitation already responded to");
+            throw new InvitationAlreadyResponded("Invitation already responded to");
         }
 
         participant.setStatus(ParticipantStatus.DECLINED);

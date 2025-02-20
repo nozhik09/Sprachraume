@@ -2,6 +2,7 @@ package com.example.Sprachraume.Rooms.controller;
 
 
 import com.example.Sprachraume.Participant.entity.Participant;
+import com.example.Sprachraume.Rooms.DTO.InviteDTO;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,18 @@ public class RoomController {
       return   roomService.createdNewRoom(userId,room);
     }
 
-    @PostMapping("/{roomId}/invite")
-    public Participant inviteUserToRoom(@PathVariable Long roomId, @RequestParam Long userId) {
-        return roomService.inviteUserToRoom(roomId, userId);
+    @PostMapping("/invite")
+    public Participant inviteUserToRoom(@RequestBody InviteDTO inviteDTO) {
+        return roomService.inviteUserToRoom(inviteDTO.getUserId(), inviteDTO.getRoomId());
     }
 
-    @PostMapping("/participant/{participantId}/accept")
-    public Participant acceptInvitation(@PathVariable Long participantId) {
+    @PostMapping("/participant/accept")
+    public Participant acceptInvitation(@RequestParam Long participantId) {
         return roomService.acceptInvitation(participantId);
     }
 
-    @PostMapping("/participant/{participantId}/decline")
-    public Participant declineInvitation(@PathVariable Long participantId) {
+    @PostMapping("/participant/decline")
+    public Participant declineInvitation(@RequestParam Long participantId) {
         return roomService.declineInvitation(participantId);
     }
 

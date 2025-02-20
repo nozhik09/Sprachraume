@@ -2,6 +2,7 @@ package com.example.Sprachraume.Participant.entity;
 
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.UserData;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "participant")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Participant {
 
     @Id
@@ -19,13 +22,13 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
-    private Room room;  // Комната, к которой относится участник
+    private Room room;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserData user;  // Пользователь, который участвует в комнате
+    private UserData user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

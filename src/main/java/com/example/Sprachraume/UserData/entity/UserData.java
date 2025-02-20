@@ -3,8 +3,11 @@ package com.example.Sprachraume.UserData.entity;
 
 import com.example.Sprachraume.Languages.entity.Languages;
 import com.example.Sprachraume.Languages.entity.LearningLanguage;
+import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Rooms.entity.Room;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +26,8 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@EqualsAndHashCode(exclude = {"nativeLanguages", "learningLanguages"})
 public class UserData implements UserDetails {
 
     @Id
@@ -51,6 +56,8 @@ public class UserData implements UserDetails {
     @Column(name = "foto")
     private String foto;
 
+    //TODO Сделвть что бы фото сохранялось на сервер
+
     @Column(name = "rating")
     private Long rating;
 
@@ -60,13 +67,12 @@ public class UserData implements UserDetails {
     @Column(name = "status")
     private Boolean status;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_native_languages",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "language_id"))
-    private Set<Languages> nativeLanguages = new HashSet<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<NativeLanguages> nativeLanguages = new HashSet<>();
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<LearningLanguage> learningLanguages = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -75,6 +81,7 @@ public class UserData implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Room> createdRooms;
 

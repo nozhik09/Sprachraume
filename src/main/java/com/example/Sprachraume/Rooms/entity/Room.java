@@ -3,6 +3,10 @@ package com.example.Sprachraume.Rooms.entity;
 
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.UserData.entity.UserData;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +20,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "room")
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class Room {
 
     @Id
@@ -48,6 +54,8 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
+    @JsonBackReference
+    @JsonIgnore
     private UserData creator;  // Связь с создателем комнаты
 
 }

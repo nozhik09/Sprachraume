@@ -25,14 +25,7 @@ public class Languages {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<LearningLanguage> learningLanguages;
 
 
-
-//    @JsonBackReference
-//    @EqualsAndHashCode.Exclude
-//    @ManyToMany(mappedBy = "nativeLanguages")
-//    private Set<UserData> users = new HashSet<>();
 
 }
