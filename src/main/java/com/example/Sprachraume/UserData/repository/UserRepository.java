@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<UserData,Long> {
     Optional<UserData> findByEmail(String email);
     Optional<UserData> findByNickname(String email);
 
-    @Query("SELECT u FROM UserData u JOIN u.nativeLanguages l WHERE LOWER(l.name) = LOWER(:languageName)")
-    List<UserData> findUserDataByNativeLanguage(@Param("languageName") String languageName);
+    @Query("SELECT u FROM UserData u JOIN u.nativeLanguages nl JOIN nl.language l WHERE l.name = :languageName")
+    List<UserData> findByNativeLanguages(@Param("languageName") String languageName);
 }

@@ -12,6 +12,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AdviceExceptionController {
 
+    @ExceptionHandler(AlreadyUsed.class)
+    public ResponseEntity<ApiExceptionHanding> nullOrEmpty(AlreadyUsed e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NullOrEmpty.class)
+    public ResponseEntity<ApiExceptionHanding> nullOrEmpty(NullOrEmpty e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    @ExceptionHandler(InvitationAlreadyResponded.class)
+    public ResponseEntity<ApiExceptionHanding> invitationAlreadyResponded(InvitationAlreadyResponded e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+
+
 
     @ExceptionHandler(EmailIsNotValid.class)
     public ResponseEntity<ApiExceptionHanding> emailIsNotValid(EmailIsNotValid e) {
