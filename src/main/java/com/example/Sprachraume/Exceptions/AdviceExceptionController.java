@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class AdviceExceptionController {
 
     @ExceptionHandler(AlreadyUsed.class)
-    public ResponseEntity<ApiExceptionHanding> nullOrEmpty(AlreadyUsed e) {
+    public ResponseEntity<ApiExceptionHanding> alreadyUsed(AlreadyUsed e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(LanguageNotFound.class)
+    public ResponseEntity<ApiExceptionHanding> languageNotFound(LanguageNotFound e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NullOrEmpty.class)

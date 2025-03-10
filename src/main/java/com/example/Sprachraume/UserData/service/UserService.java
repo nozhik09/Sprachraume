@@ -63,13 +63,9 @@ public class UserService implements UserDetailsService {
             role.setTitle(roleTitle);
             roleRepository.save(role);
         }
-
-        //TODO Рейтинг появляется сразу? или Начинается с нуля и добавляется? максимальный рейтинг? минимальный ? если ниже минимума блокируется?
-
         userData.setRoles(Collections.singleton(role));
         userRepository.save(userData);
-
-        // TODO Возвращать Response??
+        // TODO Возвращать Response
         return userData;
     }
 

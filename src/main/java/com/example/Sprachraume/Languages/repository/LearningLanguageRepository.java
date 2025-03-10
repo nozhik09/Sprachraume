@@ -15,4 +15,6 @@ public interface LearningLanguageRepository extends JpaRepository<LearningLangua
     List<LearningLanguage> findByUser(UserData user);
     List<LearningLanguage> findByLanguage(Languages languages);
     List<LearningLanguage> findByLanguage_Name(String learningLanguage);
+    Optional<LearningLanguage> findByUserAndLanguage(UserData userData,Languages languages);
+
 }

@@ -38,7 +38,7 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
             if (addLanguageDTO.getLanguageName() == null || addLanguageDTO.getLanguageName().isEmpty()) {
                 throw new NullOrEmpty("Language name must not be null or empty for a new language");
             }
-            throw new UserNotFoundException("Such a language does not exist");
+            throw new LanguageNotFound("Such a language does not exist");
         });
         if (userData.getNativeLanguages().stream()
                 .anyMatch(ll -> ll.getLanguage().getId().equals(languages.getId()))) {
@@ -62,7 +62,7 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", addLearningLanguageDTO.getUserId())));
 
         Languages languages = languagesRepository.findByName(addLearningLanguageDTO.getLanguageName())
-                .orElseThrow(() -> new UserNotFoundException("Such a language does not exist"));
+                .orElseThrow(() -> new LanguageNotFound("Such a language does not exist"));
 
         if (userData.getLearningLanguages().stream()
                 .anyMatch(ll -> ll.getLanguage().getId().equals(languages.getId()))) {
@@ -70,7 +70,6 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
                     String.format("Language %s is already added for user %s",
                             addLearningLanguageDTO.getLanguageName(), addLearningLanguageDTO.getUserId()));
         }
-
         LearningLanguage learningLanguage = new LearningLanguage();
         learningLanguage.setUser(userData);
         learningLanguage.setLanguage(languages);
@@ -82,9 +81,6 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
 
         return learningLanguage;
     }
-
-
-
 
     // TODO сделать уровень владения языком ENUM или выпадающим списком
 
@@ -118,6 +114,45 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         return nativeUsers.stream()
                 .filter(learningUsers::contains)
                 .collect(Collectors.toList());
+    }
+
+
+
+
+    public UserData deleteLearningLanguage(Long userId, Long languagesId){
+        if (userId==null || languagesId==null){
+            throw new IllegalArgumentException("User ID or Languages ID must not be null");
+        }
+
+        UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFound("Language not found"));
+        LearningLanguage learningLanguage = learningLanguageRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
+        -> new AlreadyUsed("User is not learning this language"));
+
+
+        userData.getLearningLanguages().remove(learningLanguage);
+        learningLanguageRepository.delete(learningLanguage);
+        userRepository.save(userData);
+        return userData;
+
+    }
+
+
+    public UserData deleteNativeLanguage(Long userId, Long languagesId){
+        if (userId==null || languagesId==null){
+            throw new IllegalArgumentException("User ID or Languages ID must not be null");
+        }
+
+        UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFound("Language not found"));
+        NativeLanguages nativeLanguages = nativeLanguagesRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
+                -> new AlreadyUsed("User is not learning this language"));
+
+
+        userData.getNativeLanguages().remove(nativeLanguages);
+        nativeLanguagesRepository.delete(nativeLanguages);
+        userRepository.save(userData);
+        return userData;
     }
 
 
