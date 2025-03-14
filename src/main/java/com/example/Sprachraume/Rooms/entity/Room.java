@@ -54,8 +54,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
-    @JsonBackReference
-    @JsonIgnore
+    @JsonBackReference("creator-rooms")
     private UserData creator;  // Связь с создателем комнаты
 
 }

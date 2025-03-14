@@ -77,5 +77,23 @@ public class UserController {
         return userService.updateUser(requestDto);
     }
 
+    @PutMapping("/block")
+    public UserData blockUser(@RequestParam Long admin,@RequestParam Long user){
+        return userService.blockUser(admin,user);
+
+    }
+    @PutMapping("/unlock")
+    public UserData unlockUser(@RequestParam Long admin,@RequestParam Long user){
+        return userService.unlockUser(admin,user);
+    }
+    @PutMapping("/setAdmin")
+    public UserData appointAnAdministrator(@RequestParam Long admin,@RequestParam Long user){
+        return userService.appointAnAdministrator(admin,user);
+    }
+
+    @DeleteMapping("/delete")
+    public String deleteAccount(@RequestParam Long id){
+        return userService.deleteAccount(id);
+    }
 
 }

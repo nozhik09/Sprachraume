@@ -1,12 +1,15 @@
 package com.example.Sprachraume.security.DTO;
 
 
-import jakarta.persistence.Column;
+import com.example.Sprachraume.Languages.entity.LearningLanguage;
+import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,11 +27,9 @@ public class LoginResponseDTO {
 
     private LocalDate birthdayDate;
 
-    private String nativeLanguage;
+    private Set<NativeLanguages> nativeLanguages;
 
-    private String learningLanguage;
-
-    private String skillLevel;
+    private Set<LearningLanguage> learningLanguages;
 
     private Long rating;
 

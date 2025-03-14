@@ -5,6 +5,8 @@ import com.example.Sprachraume.Exceptions.Exception.EmailIsNotValid;
 import com.example.Sprachraume.Exceptions.Exception.InvalidPassword;
 import com.example.Sprachraume.Exceptions.Exception.PasswordIsNotValid;
 import com.example.Sprachraume.Exceptions.Exception.UserIsBlocking;
+import com.example.Sprachraume.Languages.entity.LearningLanguage;
+import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.service.UserService;
 import com.example.Sprachraume.security.DTO.LoginRequestDTO;
@@ -29,6 +31,7 @@ public class AuthService {
     private final TokenService tokenService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Map<String, String> refreshStorage = new HashMap<>();
+    private final LearningLanguageRepository learningLanguageRepository;
 
 
     public LoginResponseDTO login(LoginRequestDTO requestDTO) throws AuthException {
@@ -55,6 +58,7 @@ public class AuthService {
             LoginResponseDTO responseDTO = modelMapper.map(foundUser, LoginResponseDTO.class);
             responseDTO.setAccessToken(accessToken);
             responseDTO.setRefreshToken(refreshToken);
+            responseDTO.setMessage("Вы успешно вошли в аккаунт");
             return responseDTO;
 
 

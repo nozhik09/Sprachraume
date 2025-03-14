@@ -13,5 +13,6 @@ public interface NativeLanguagesRepository extends JpaRepository<NativeLanguages
 
     List<NativeLanguages> findByLanguage_Name(String nativeLanguage);
     Optional<NativeLanguages> findByUserAndLanguage(UserData userData, Languages languages);
+   List<NativeLanguages> findAllByUser(UserData userData);
 
 }
