@@ -76,7 +76,6 @@ public class RoomService {
             }
         }
 
-        // Если участник еще не приглашен, создаем новое приглашение
         Participant participant = new Participant();
         participant.setRoom(room);
         participant.setUser(user);

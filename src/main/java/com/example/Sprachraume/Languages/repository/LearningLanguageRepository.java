@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface LearningLanguageRepository extends JpaRepository<LearningLanguage, Long> {
+    List<LearningLanguage> findAllByUser(UserData user);
     List<LearningLanguage> findByUser(UserData user);
     List<LearningLanguage> findByLanguage(Languages languages);
     List<LearningLanguage> findByLanguage_Name(String learningLanguage);

@@ -3,13 +3,23 @@ package com.example.Sprachraume.UserData.service;
 
 import com.example.Sprachraume.Exceptions.Exception.*;
 import com.example.Sprachraume.Languages.entity.Languages;
+import com.example.Sprachraume.Languages.entity.LearningLanguage;
+import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Languages.repository.LanguagesRepository;
+import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
+import com.example.Sprachraume.Languages.repository.NativeLanguagesRepository;
+import com.example.Sprachraume.Participant.entity.Participant;
+import com.example.Sprachraume.Participant.repository.ParticipantRepository;
 import com.example.Sprachraume.Role.Role;
+import com.example.Sprachraume.Role.Roles;
 import com.example.Sprachraume.Role.repository.RoleRepository;
+import com.example.Sprachraume.Rooms.entity.Room;
+import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
+import com.nimbusds.oauth2.sdk.util.singleuse.AlreadyUsedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +40,10 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final LanguagesRepository languagesRepository;
+    private final RoomRepository roomRepository;
+    private final ParticipantRepository participantRepository;
+    private final NativeLanguagesRepository nativeLanguagesRepository;
+    private final LearningLanguageRepository learningLanguageRepository;
 
 
     public UserData registerNewUser(UserRequestDto requestDto) {
@@ -102,6 +117,86 @@ public class UserService implements UserDetailsService {
         userRepository.save(userData);
         return userData;
     }
+
+    public UserData blockUser(Long adminId, Long userId) {
+        UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
+        UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
+        if (!user.getStatus()) {
+            throw new AlreadyUsed(String.format("User with id %s already block", userId));
+        } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
+            user.setStatus(false);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRoleException("Only the administrator can block the user");
+        }
+
+        return user;
+    }
+
+    public UserData unlockUser(Long adminId, Long userId) {
+        UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
+        UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
+        if (user.getStatus()) {
+            throw new AlreadyUsed(String.format("User with id %s already unlock", userId));
+        } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
+            user.setStatus(true);
+            userRepository.save(user);
+
+        } else {
+            throw new InvalidRoleException("Only the administrator can unlock the user");
+        }
+
+        return user;
+    }
+
+    public UserData appointAnAdministrator(Long adminId, Long userId) {
+
+        UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
+        UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
+
+        if (!user.getStatus()) {
+            throw new UserIsBlocking("You cannot assign a blocked user admin, first unlock the user");
+        } else if (user.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
+            throw new AlreadyUsed(String.format("User with id %s already admin", userId));
+        } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::contains)) {
+            Role role = roleRepository.findByTitle("ROLE_ADMIN");
+            user.getRoles().add(role);
+            userRepository.save(user);
+        } else {
+            throw new InvalidRoleException("Only the administrator can appoint an the admin");
+        }
+
+        return user;
+
+    }
+
+
+    public String deleteAccount(Long id) {
+        UserData user = userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException(String.format("User with id %s not found", id)));
+        List<NativeLanguages> nativeLanguagesList = nativeLanguagesRepository.findAllByUser(user);
+        if (!nativeLanguagesList.isEmpty()) {
+            nativeLanguagesRepository.deleteAll(nativeLanguagesList);
+            user.getNativeLanguages().clear();
+        }
+        List<LearningLanguage> learningLanguageList = learningLanguageRepository.findAllByUser(user);
+        if (!learningLanguageList.isEmpty()) {
+            learningLanguageRepository.deleteAll(learningLanguageList);
+            user.getLearningLanguages().clear();
+        }
+        List<Room> roomList = roomRepository.findAllByCreator(user);
+        if (!roomList.isEmpty()){
+            roomRepository.deleteAll(roomList);
+            user.getCreatedRooms().clear();
+        }
+        List<Participant> participantList = participantRepository.findByUser(user);
+        if (!participantList.isEmpty()){
+            participantRepository.deleteAll(participantList);
+        }
+        userRepository.delete(user);
+        return String.format("User C ID %S successfully deleted", id);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
