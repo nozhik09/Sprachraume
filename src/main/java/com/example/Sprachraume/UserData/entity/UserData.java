@@ -1,7 +1,6 @@
     package com.example.Sprachraume.UserData.entity;
 
 
-    import com.example.Sprachraume.Languages.entity.Languages;
     import com.example.Sprachraume.Languages.entity.LearningLanguage;
     import com.example.Sprachraume.Languages.entity.NativeLanguages;
     import com.example.Sprachraume.Role.Role;
@@ -59,7 +58,7 @@
         //TODO Сделвть что бы фото сохранялось на сервер
 
         @Column(name = "rating")
-        private Long rating;
+        private Double rating;
 
         @Column(name = "internal_currency")
         private String internalCurrency;

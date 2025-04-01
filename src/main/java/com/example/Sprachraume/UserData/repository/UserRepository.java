@@ -12,7 +12,11 @@ public interface UserRepository extends JpaRepository<UserData,Long> {
 
     Optional<UserData> findByEmail(String email);
     Optional<UserData> findByNickname(String email);
+    List<UserData> findAllByStatus(Boolean status);
 
     @Query("SELECT u FROM UserData u JOIN u.nativeLanguages nl JOIN nl.language l WHERE l.name = :languageName")
     List<UserData> findByNativeLanguages(@Param("languageName") String languageName);
+
+    List<UserData> findAllByRatingBetween(Double rating,Double maxRating);
+    List<UserData> findAllByRating(Double rating);
 }

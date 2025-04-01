@@ -14,6 +14,7 @@ import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class RoomService {
 
 
     public Room createdNewRoom(Long id, Room room) {
-
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
             throw new IllegalArgumentException("Topic is required");
         }
@@ -47,12 +47,12 @@ public class RoomService {
         newRoom.setLanguage(room.getLanguage());
         newRoom.setStartTime(room.getStartTime());
         if (room.getMaxQuantity() > 25) {
-            throw new IllegalArgumentException("Max Quantity 20 participant");
+            throw new IllegalArgumentException("Max Quantity 25 participant");
         } else {
             newRoom.setMaxQuantity(room.getMaxQuantity());
-        }
+        }//TODO Добавить приглашенных пользователей
+        //TODO если время комнаты закончилась, комната перекидывалась в архив
         return roomRepository.save(newRoom);
-
     }
 
     public Participant inviteUserToRoom(Long userId, Long roomID) {
@@ -61,13 +61,13 @@ public class RoomService {
 
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        //TODO добавиьть проверку на возраст
 
         Optional<Participant> optionalParticipant = participantRepository.findByRoomAndUser(room, user);
 
         if (optionalParticipant.isPresent()) {
             Participant participant = optionalParticipant.get();
 
-            // Разрешаем повторное приглашение только если статус DECLINED
             if (participant.getStatus() == ParticipantStatus.DECLINED) {
                 participant.setStatus(ParticipantStatus.PENDING);
                 return participantRepository.save(participant);
@@ -84,16 +84,17 @@ public class RoomService {
     }
 
 
-
-    public Participant acceptInvitation(Long participantId) {
+    public Participant acceptInvitation(Long participantId, Long roomId) {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
-
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
         if (participant.getStatus() != ParticipantStatus.PENDING) {
             throw new InvitationAlreadyResponded("Invitation already responded to");
         }
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
+        room.getParticipants().add(participant);
+        roomRepository.save(room);
         return participantRepository.save(participant);
     }
 
@@ -108,6 +109,21 @@ public class RoomService {
         participant.setStatus(ParticipantStatus.DECLINED);
         return participantRepository.save(participant);
     }
+
+
+    public Room getRoom(Long roomId) {
+        return roomRepository.findById(roomId).orElseThrow(() -> new UserNotFoundException("Комната не найдена"));
+    }
+
+    public List<Room> getAllRoom() {
+        return roomRepository.findAll();
+    }
+
+
+    public List<Room> getAllParticipantRoom(Long participantId) {
+        return roomRepository.findRoomByParticipantsId(participantId);
+    }
+    //TODO сделать фильтры по языку по статусу по юзеру по возрасту
 
 
 }

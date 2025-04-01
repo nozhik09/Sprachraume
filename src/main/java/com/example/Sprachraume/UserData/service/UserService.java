@@ -2,16 +2,13 @@ package com.example.Sprachraume.UserData.service;
 
 
 import com.example.Sprachraume.Exceptions.Exception.*;
-import com.example.Sprachraume.Languages.entity.Languages;
 import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
-import com.example.Sprachraume.Languages.repository.LanguagesRepository;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.Languages.repository.NativeLanguagesRepository;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
 import com.example.Sprachraume.Role.Role;
-import com.example.Sprachraume.Role.Roles;
 import com.example.Sprachraume.Role.repository.RoleRepository;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
@@ -19,7 +16,6 @@ import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
-import com.nimbusds.oauth2.sdk.util.singleuse.AlreadyUsedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +34,6 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final LanguagesRepository languagesRepository;
     private final RoomRepository roomRepository;
     private final ParticipantRepository participantRepository;
     private final NativeLanguagesRepository nativeLanguagesRepository;
@@ -65,7 +59,7 @@ public class UserService implements UserDetailsService {
         userData.setEmail(requestDto.getEmail());
         userData.setPassword(bCryptPasswordEncoder.encode(requestDto.getPassword()));
         userData.setStatus(true);
-        userData.setRating(5L);
+        userData.setRating(5D);
 
         String roleTitle = requestDto.getRole();
         if (!roleTitle.equals("ROLE_USER") && !roleTitle.equals("ROLE_LIBRARY")) {
@@ -185,17 +179,33 @@ public class UserService implements UserDetailsService {
             user.getLearningLanguages().clear();
         }
         List<Room> roomList = roomRepository.findAllByCreator(user);
-        if (!roomList.isEmpty()){
+        if (!roomList.isEmpty()) {
             roomRepository.deleteAll(roomList);
             user.getCreatedRooms().clear();
         }
         List<Participant> participantList = participantRepository.findByUser(user);
-        if (!participantList.isEmpty()){
+        if (!participantList.isEmpty()) {
             participantRepository.deleteAll(participantList);
         }
         userRepository.delete(user);
         return String.format("User C ID %S successfully deleted", id);
     }
+
+
+    public List<UserData> getAllBlockUsers(Boolean status) {
+        return userRepository.findAllByStatus(status);
+    }
+
+    public List<UserData> getUsersByRatingBetween(Double rating) {
+        double max = rating +1;
+        return userRepository.findAllByRatingBetween(rating,max);
+    }
+    public List<UserData> getUsersByRating(Double rating) {
+        double max = rating +1;
+        return userRepository.findAllByRatingBetween(rating,max);
+    }
+
+    //TODO для админа фильтр пользователей и по рейтингу
 
 
     @Override
