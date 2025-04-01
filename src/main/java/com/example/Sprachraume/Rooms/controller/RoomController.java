@@ -8,6 +8,8 @@ import com.example.Sprachraume.Rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/room")
 @RequiredArgsConstructor
@@ -27,13 +29,23 @@ public class RoomController {
     }
 
     @PostMapping("/participant/accept")
-    public Participant acceptInvitation(@RequestParam Long participantId) {
-        return roomService.acceptInvitation(participantId);
+    public Participant acceptInvitation(@RequestParam Long participantId,@RequestParam Long roomId) {
+        return roomService.acceptInvitation(participantId,roomId);
     }
 
     @PostMapping("/participant/decline")
     public Participant declineInvitation(@RequestParam Long participantId) {
         return roomService.declineInvitation(participantId);
+    }
+    
+    @GetMapping("/id")
+    public Room getRoom(@RequestParam Long roomId){
+        return roomService.getRoom(roomId);
+    }
+
+    @GetMapping("/allRoom")
+    public List<Room> getAllParticipantRoom(@RequestParam Long participantId){
+        return roomService.getAllParticipantRoom(participantId);
     }
 
 

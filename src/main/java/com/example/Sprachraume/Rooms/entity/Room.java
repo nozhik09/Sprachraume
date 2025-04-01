@@ -4,24 +4,22 @@ package com.example.Sprachraume.Rooms.entity;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalTime;
 import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "room")
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
+@EqualsAndHashCode(exclude = {"participants"})
 public class Room {
 
     @Id
@@ -42,6 +40,7 @@ public class Room {
     private Long minQuantity;
     @Column(name = "max_quantity")
     private Long maxQuantity;
+    //TODO Начало конец продолжительность изменить на LokaldateTime и добавить категорию активна или неактвна комната
 
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -49,6 +48,7 @@ public class Room {
             name = "participant_room",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id"))
+    @JsonManagedReference
     private Set<Participant> participants;
 
 

@@ -96,4 +96,20 @@ public class UserController {
         return userService.deleteAccount(id);
     }
 
+
+    @GetMapping("/blockingUsers")
+    public List<UserData> getAllBlockUsers(@RequestParam Boolean status){
+        return userService.getAllBlockUsers(status);
+    }
+
+    @GetMapping("/ratingBetween")
+    public List<UserData> getUserByRatingBetween(@RequestParam Double rating){
+        return userService.getUsersByRatingBetween(rating);
+    }
+
+    @GetMapping("/rating")
+    public List<UserData> getUserByRating(@RequestParam Double rating){
+        return userService.getUsersByRating(rating);
+    }
+
 }
