@@ -112,4 +112,9 @@ public class UserController {
         return userService.getUsersByRating(rating);
     }
 
+@GetMapping("/findAnyUsers")
+    public List<UserData> searchUsers(@RequestParam String keyword) {
+        return userService.searchUsers(keyword);
+    }
+
 }

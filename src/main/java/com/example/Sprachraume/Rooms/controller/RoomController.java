@@ -8,6 +8,7 @@ import com.example.Sprachraume.Rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,8 +20,8 @@ public class RoomController {
 
 
     @PostMapping
-    public Room createNewRoom(@RequestParam Long userId, @RequestBody Room room){
-      return   roomService.createdNewRoom(userId,room);
+    public Room createNewRoom(@RequestParam Long userId, @RequestBody Room room) {
+        return roomService.createdNewRoom(userId, room);
     }
 
     @PostMapping("/invite")
@@ -29,26 +30,30 @@ public class RoomController {
     }
 
     @PostMapping("/participant/accept")
-    public Participant acceptInvitation(@RequestParam Long participantId,@RequestParam Long roomId) {
-        return roomService.acceptInvitation(participantId,roomId);
+    public Participant acceptInvitation(@RequestParam Long participantId, @RequestParam Long roomId) {
+        return roomService.acceptInvitation(participantId, roomId);
     }
 
     @PostMapping("/participant/decline")
     public Participant declineInvitation(@RequestParam Long participantId) {
         return roomService.declineInvitation(participantId);
     }
-    
+
     @GetMapping("/id")
-    public Room getRoom(@RequestParam Long roomId){
+    public Room getRoom(@RequestParam Long roomId) {
         return roomService.getRoom(roomId);
     }
 
     @GetMapping("/allRoom")
-    public List<Room> getAllParticipantRoom(@RequestParam Long participantId){
+    public List<Room> getAllParticipantRoom(@RequestParam Long participantId) {
         return roomService.getAllParticipantRoom(participantId);
     }
 
 
+    @PutMapping("/extendTime")
+    public Room extendTime(@RequestParam Long roomId, @RequestBody LocalDateTime endTime) {
+        return roomService.extendTime(roomId, endTime);
+    }
 
 
 }

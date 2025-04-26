@@ -11,8 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,7 +30,13 @@ public class Room {
     @Column(name = "topic")
     private String topic;
     @Column(name = "start_time")
-    private LocalTime startTime;
+    private LocalDateTime startTime;
+    @Column(name = "end_Time")
+    private LocalDateTime endTime;
+
+    @Column(name = "duration")
+    private Long duration;
+
     @Column(name = "status")
     private Boolean status;
     @Column(name = "age")
@@ -40,14 +47,11 @@ public class Room {
     private Long minQuantity;
     @Column(name = "max_quantity")
     private Long maxQuantity;
-    //TODO Начало конец продолжительность изменить на LokaldateTime и добавить категорию активна или неактвна комната
+    //TODO +++++Начало конец продолжительность изменить на LokaldateTime и добавить категорию активна или неактвна комната
+    @Column(name = "room_url")
+    private String roomUrl;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "participant_room",
-            joinColumns = @JoinColumn(name = "room_id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id"))
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<Participant> participants;
 

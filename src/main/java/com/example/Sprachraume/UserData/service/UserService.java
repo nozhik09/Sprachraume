@@ -74,7 +74,6 @@ public class UserService implements UserDetailsService {
         }
         userData.setRoles(Collections.singleton(role));
         userRepository.save(userData);
-        // TODO Возвращать Response
         return userData;
     }
 
@@ -205,7 +204,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findAllByRatingBetween(rating,max);
     }
 
-    //TODO для админа фильтр пользователей и по рейтингу
 
 
     @Override
@@ -224,6 +222,12 @@ public class UserService implements UserDetailsService {
         String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!_*])(?!.*\\s).{8,32}$";
         return password.matches(passwordRegex);
     }
+
+    public List<UserData> searchUsers(String keyword) {
+        return userRepository.searchUsers(keyword);
+    }
+
+    //TODO ++++++Поииск по имени по фамилии никнейм или имейл
 
 
 }

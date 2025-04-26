@@ -55,6 +55,8 @@
         @Column(name = "foto")
         private String foto;
 
+        //TODO Переименовать на автар
+
         //TODO Сделвть что бы фото сохранялось на сервер
 
         @Column(name = "rating")

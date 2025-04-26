@@ -13,4 +13,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     List<Room> findAllByCreator (UserData userData);
     List<Room> findRoomByParticipantsId(Long participantId);
+    List<Room> findByStatusTrue();
 }
