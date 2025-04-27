@@ -11,6 +11,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @RequiredArgsConstructor
 @ControllerAdvice
 public class AdviceExceptionController {
+    @ExceptionHandler(UserTooYoungException.class)
+    public ResponseEntity<ApiExceptionHanding> userTooYoungException(UserTooYoungException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+
+    } @ExceptionHandler(UserBirthdayNotSet.class)
+    public ResponseEntity<ApiExceptionHanding> userBirthdayNotSet(UserBirthdayNotSet e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(AlreadyUsed.class)
     public ResponseEntity<ApiExceptionHanding> alreadyUsed(AlreadyUsed e) {

@@ -19,4 +19,11 @@ public interface UserRepository extends JpaRepository<UserData,Long> {
 
     List<UserData> findAllByRatingBetween(Double rating,Double maxRating);
     List<UserData> findAllByRating(Double rating);
+    @Query("SELECT u FROM UserData u WHERE " +
+            "LOWER(u.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(u.surname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(u.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<UserData> searchUsers(@Param("keyword") String keyword);
+
 }
