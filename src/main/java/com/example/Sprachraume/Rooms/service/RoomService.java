@@ -5,12 +5,14 @@ import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantStatus;
+import com.example.Sprachraume.Participant.entity.ParticipantType;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -72,6 +74,7 @@ public class RoomService {
         return roomRepository.save(newRoom);
     }
 
+    // админ комнаты приглашает юзера
     public Participant inviteUserToRoom(Long userId, Long roomID) {
         Room room = roomRepository.findById(roomID)
                 .orElseThrow(() -> new RoomNotFoundException("There is no such room"));
@@ -88,9 +91,7 @@ public class RoomService {
         if (room.getAge() != null && userAge < room.getAge()) {
             throw new UserTooYoungException("User does not meet the age requirement for this room");
         }
-
         //TODO +++++добавиьть проверку на возраст
-
         Optional<Participant> optionalParticipant = participantRepository.findByRoomAndUser(room, user);
 
         if (optionalParticipant.isPresent()) {
@@ -98,6 +99,7 @@ public class RoomService {
 
             if (participant.getStatus() == ParticipantStatus.DECLINED) {
                 participant.setStatus(ParticipantStatus.PENDING);
+                participant.setParticipantType(ParticipantType.INVITED_BY_CREATOR);
                 return participantRepository.save(participant);
             } else {
                 throw new InvitationAlreadyResponded("User is already invited or participating");
@@ -108,25 +110,33 @@ public class RoomService {
         participant.setRoom(room);
         participant.setUser(user);
         participant.setStatus(ParticipantStatus.PENDING);
+        participant.setParticipantType(ParticipantType.INVITED_BY_CREATOR);
         return participantRepository.save(participant);
     }
 
 
-    public Participant acceptInvitation(Long participantId, Long roomId) {
+    //Пользователь принимает приглашение от адммина комнаты
+    public Participant acceptInvitationByUser(Long participantId, Long roomId) {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
+
         if (participant.getStatus() != ParticipantStatus.PENDING) {
             throw new InvitationAlreadyResponded("Invitation already responded to");
         }
+        //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
         roomRepository.save(room);
+
         return participantRepository.save(participant);
     }
 
-    public Participant declineInvitation(Long participantId) {
+    // Админ отправил приглашение, пользователь отклоняет
+    public Participant declineInvitationByUser(Long participantId) {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
 
@@ -139,10 +149,159 @@ public class RoomService {
     }
 
 
-    public Room extendTime(Long roomId ,LocalDateTime endTime){
+    // пользователь отправляем запрос на то что бы вступить в комнату
+    public Participant requestToJoinRoom(Long userId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found"));
+
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Optional<Participant> existingRequest = participantRepository.findByRoomAndUser(room, user);
+        if (existingRequest.isPresent()) {
+            throw new AlreadyUsed("You have already requested to join this room or are already a participant");
+        }
+        //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
+        Participant participant = new Participant();
+        participant.setRoom(room);
+        participant.setUser(user);
+        participant.setStatus(ParticipantStatus.PENDING);
+        participant.setParticipantType(ParticipantType.REQUESTED_BY_USER);
+        return participantRepository.save(participant);
+    }
+
+
+    // админ комнаты смотрит приглашения пользователей которых он пригласил
+    public List<Participant> getPendingInviteByAdmin(Long creatorId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found"));
+
+        if (!room.getCreator().getId().equals(creatorId)) {
+            throw new InvalidRoleException("Only the room creator can view requests");
+        }
+
+        return participantRepository.findAllByRoomAndParticipantTypeAndStatus(room, ParticipantType.INVITED_BY_CREATOR, ParticipantStatus.PENDING);
+    }
+
+
+    // админ комнаты смотрит приглашения пользователей которыe приняли пришлашение
+    public List<Participant> getAcceptedInviteByAdmin(Long creatorId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found"));
+
+        if (!room.getCreator().getId().equals(creatorId)) {
+            throw new InvalidRoleException("Only the room creator can view requests");
+        }
+
+        return participantRepository.findAllByRoomAndStatus(room, ParticipantStatus.ACCEPTED);
+    }
+
+     //Админ смотрит заявки на вступление ОТ Юзера
+    public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found"));
+
+        if (!room.getCreator().getId().equals(creatorId)) {
+            throw new InvalidRoleException("Only the room creator can view requests");
+        }
+
+        return participantRepository.findAllByRoomAndParticipantTypeAndStatus(
+                room,
+                ParticipantType.REQUESTED_BY_USER,
+                ParticipantStatus.PENDING
+        );
+    }
+
+
+    // админ подтверждает пришлашение
+    public Participant acceptRequestByAdmin(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new UserNotFoundException("Request not found"));
+
+        participant.setStatus(ParticipantStatus.ACCEPTED);
+        return participantRepository.save(participant);
+    }
+
+
+    // админ отклоняет пришлашение
+    public Participant declineRequestByAdmin(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new UserNotFoundException("Request not found"));
+
+        participant.setStatus(ParticipantStatus.DECLINED);
+        return participantRepository.save(participant);
+    }
+
+
+    //Юзер смотрит все пришлашение которые он принял
+    public List<Room> getAcceptedRoomsByUser(Long userId) {
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<Participant> acceptedParticipants = participantRepository.findAllByUserAndStatus(user, ParticipantStatus.ACCEPTED);
+
+        return acceptedParticipants.stream()
+                .map(Participant::getRoom)
+                .toList();
+    }
+
+
+    //Юзер смотрит все пришлашение которые он отправли
+    public List<Room> getPendingInvitationsByUser(Long userId) {
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<Participant> pendingParticipants = participantRepository.findAllByUserAndParticipantTypeAndStatus(user, ParticipantType.REQUESTED_BY_USER, ParticipantStatus.PENDING);
+
+        return pendingParticipants.stream()
+                .map(Participant::getRoom)
+                .toList();
+    }
+
+
+    //Юзер смотрит приглщения которые ЕМУ отправили
+    public List<Room> getPendingInvitationsReceivedByUser(Long userId) {
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<Participant> pendingParticipants = participantRepository.findAllByUserAndParticipantTypeAndStatus(
+                user,
+                ParticipantType.INVITED_BY_CREATOR,
+                ParticipantStatus.PENDING
+        );
+
+        return pendingParticipants.stream()
+                .map(Participant::getRoom)
+                .toList();
+    }
+
+
+    public List<Room> filterRooms(String language, Boolean status, Long minAge) {
+        Specification<Room> spec = Specification.where(null);
+
+        if (language != null && !language.isEmpty()) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("language"), language));
+        }
+
+        if (status != null) {
+            spec = spec.and((root, query, builder) ->
+                    builder.equal(root.get("status"), status));
+        }
+
+        if (minAge != null) {
+            spec = spec.and((root, query, builder) ->
+                    builder.greaterThanOrEqualTo(root.get("age"), minAge));
+        }
+
+        return roomRepository.findAll(spec);
+    }
+
+
+    public Room extendTime(Long roomId, LocalDateTime endTime) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
 
-        if (room.getStatus()){
+        if (room.getStatus()) {
             room.setEndTime(endTime);
         }
         return room;
@@ -159,9 +318,9 @@ public class RoomService {
     }
 
 
-    public List<Room> getAllParticipantRoom(Long participantId) {
-        return roomRepository.findRoomByParticipantsId(participantId);
-    }
+//    public List<Room> getAllParticipantRoom(Long participantId) {
+//        return roomRepository.findRoomByParticipantsId(participantId);
+//    }
 
 
     private int calculateAge(LocalDate birthday, LocalDate currentDate) {

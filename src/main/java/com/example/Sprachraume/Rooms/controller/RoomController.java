@@ -24,29 +24,41 @@ public class RoomController {
         return roomService.createdNewRoom(userId, room);
     }
 
-    @PostMapping("/invite")
-    public Participant inviteUserToRoom(@RequestBody InviteDTO inviteDTO) {
-        return roomService.inviteUserToRoom(inviteDTO.getUserId(), inviteDTO.getRoomId());
+
+    @PostMapping("/participant/invite/sendInvitation")
+    public Participant requestToJoinRoom(@RequestParam Long userId, @RequestParam Long roomId) {
+        return roomService.requestToJoinRoom(userId, roomId);
     }
 
-    @PostMapping("/participant/accept")
-    public Participant acceptInvitation(@RequestParam Long participantId, @RequestParam Long roomId) {
-        return roomService.acceptInvitation(participantId, roomId);
+
+    @PutMapping("/participant/invite/accept")
+    public Participant acceptInvitationByUser(@RequestParam Long participantId, @RequestParam Long roomId) {
+        return roomService.acceptInvitationByUser(participantId, roomId);
     }
 
-    @PostMapping("/participant/decline")
-    public Participant declineInvitation(@RequestParam Long participantId) {
-        return roomService.declineInvitation(participantId);
+    @PutMapping("/participant/invite/decline")
+    public Participant declineInvitationByUser(@RequestParam Long participantId) {
+        return roomService.declineInvitationByUser(participantId);
+    }
+
+    @GetMapping("/participant/invite/getAccept")
+    public List<Room> getAcceptedRoomsByUser(@RequestParam Long userId) {
+        return roomService.getAcceptedRoomsByUser(userId);
+    }
+
+    @GetMapping("participant/invite/getPending")
+    public List<Room> getPendingInvitationsByUser(@RequestParam Long userId) {
+        return roomService.getPendingInvitationsByUser(userId);
+    }
+
+    @GetMapping("/participant/invite/received")
+    public List<Room> getPendingInvitationsReceivedByUser(Long userId){
+        return roomService.getPendingInvitationsReceivedByUser(userId);
     }
 
     @GetMapping("/id")
     public Room getRoom(@RequestParam Long roomId) {
         return roomService.getRoom(roomId);
-    }
-
-    @GetMapping("/allRoom")
-    public List<Room> getAllParticipantRoom(@RequestParam Long participantId) {
-        return roomService.getAllParticipantRoom(participantId);
     }
 
 
@@ -56,4 +68,53 @@ public class RoomController {
     }
 
 
+    @PostMapping("/adminRoom/invite")
+    public Participant inviteUserToRoom(@RequestParam Long userId, @RequestParam Long roomId) {
+        return roomService.inviteUserToRoom(userId,roomId);
+    }
+
+    @GetMapping("/adminRoom/checkPendingInvite")
+    public List<Participant> getPendingInviteByAdmin(@RequestParam Long creatorId, @RequestParam Long roomId) {
+        return roomService.getPendingInviteByAdmin(creatorId, roomId);
+    }
+    
+    
+    @GetMapping("/adminRoom/invite/participant")
+    public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId){
+        return roomService.getPendingRequestsSentByUsers(creatorId,roomId);
+    }
+
+    @GetMapping("/adminRoom/invite/accept")
+    public List<Participant> getAcceptedInviteByAdmin(Long creatorId, Long roomId){
+        return roomService.getAcceptedInviteByAdmin(creatorId, roomId);
+    }
+
+
+
+    @PutMapping("/adminRoom/accept")
+    public Participant acceptRequestByAdmin(@RequestParam Long participantId) {
+        return roomService.acceptRequestByAdmin(participantId);
+    }
+
+    @PutMapping("/adminRoom/decline")
+    public Participant declineRequestByAdmin(@RequestParam Long participantId) {
+        return roomService.declineRequestByAdmin(participantId);
+    }
+    
+    
+
+
+    @GetMapping("/filter")
+    public List<Room> filterRooms(
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) Long minAge
+    ) {
+        return roomService.filterRooms(language, status, minAge);
+    }
+
+    // @GetMapping("/allRoom")
+//    public List<Room> getAllParticipantRoom(@RequestParam Long participantId) {
+//        return roomService.getAllParticipantRoom(participantId);
+//    }
 }

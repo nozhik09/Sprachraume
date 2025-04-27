@@ -40,4 +40,9 @@ public class Participant {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ParticipantStatus status;  // Статус: PENDING, ACCEPTED, DECLINED
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "participant_type", nullable = false)
+    private ParticipantType participantType;  // Кто инициировал: создатель или пользователь
+
 }
