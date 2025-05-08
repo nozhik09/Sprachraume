@@ -47,7 +47,7 @@ public class Room {
     private Long minQuantity;
     @Column(name = "max_quantity")
     private Long maxQuantity;
-    //TODO +++++Начало конец продолжительность изменить на LokaldateTime и добавить категорию активна или неактвна комната
+    //TODO добавить категорию
     @Column(name = "room_url")
     private String roomUrl;
 

@@ -64,8 +64,7 @@ public class RoomService {
             throw new IllegalArgumentException("Max Quantity 25 participant");
         } else {
             newRoom.setMaxQuantity(room.getMaxQuantity());
-        }//TODO +++++Добавить приглашенных пользователей
-        //TODO +++++если время комнаты закончилась, комната перекидывалась в архив
+        }
         boolean isActive = room.getEndTime().isAfter(LocalDateTime.now());
         newRoom.setStatus(isActive);
         newRoom.setParticipants(new HashSet<>());
@@ -91,7 +90,7 @@ public class RoomService {
         if (room.getAge() != null && userAge < room.getAge()) {
             throw new UserTooYoungException("User does not meet the age requirement for this room");
         }
-        //TODO +++++добавиьть проверку на возраст
+
         Optional<Participant> optionalParticipant = participantRepository.findByRoomAndUser(room, user);
 
         if (optionalParticipant.isPresent()) {
@@ -246,7 +245,7 @@ public class RoomService {
     }
 
 
-    //Юзер смотрит все пришлашение которые он отправли
+    //Юзер смотрит все пришлашение которые он отправл
     public List<Room> getPendingInvitationsByUser(Long userId) {
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -305,12 +304,12 @@ public class RoomService {
             room.setEndTime(endTime);
         }
         return room;
-        //TODO ++++продилть время комнаты
+
     }
 
 
     public Room getRoom(Long roomId) {
-        return roomRepository.findById(roomId).orElseThrow(() -> new UserNotFoundException("Комната не найдена"));
+        return roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Комната не найдена"));
     }
 
     public List<Room> getAllRoom() {

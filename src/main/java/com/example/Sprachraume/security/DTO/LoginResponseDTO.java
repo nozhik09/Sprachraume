@@ -50,5 +50,4 @@ public class LoginResponseDTO {
 
     private String message;
 
-    //TODO +++++возвращать все поля юзера
 }
