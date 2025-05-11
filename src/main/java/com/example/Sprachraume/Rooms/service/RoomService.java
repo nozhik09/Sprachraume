@@ -7,6 +7,7 @@ import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantStatus;
 import com.example.Sprachraume.Participant.entity.ParticipantType;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
+import com.example.Sprachraume.Rooms.entity.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
@@ -34,7 +35,7 @@ public class RoomService {
     private final DailyRoomService dailyRoomService;
 
 
-    public Room createdNewRoom(Long id, Room room) {
+    public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
             throw new IllegalArgumentException("Topic is required");
         }

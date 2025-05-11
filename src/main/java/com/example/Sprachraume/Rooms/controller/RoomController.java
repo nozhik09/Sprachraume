@@ -3,6 +3,7 @@ package com.example.Sprachraume.Rooms.controller;
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
+import com.example.Sprachraume.Rooms.entity.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +33,7 @@ public class RoomController {
             @ApiResponse(responseCode = "409", description = "Max participant limit exceeded", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping
-    public Room createNewRoom(@RequestParam Long userId, @RequestBody Room room) {
+    public Room createNewRoom(@RequestParam Long userId, @RequestBody CreateNewRoomDTORequest room) {
         return roomService.createdNewRoom(userId, room);
     }
 

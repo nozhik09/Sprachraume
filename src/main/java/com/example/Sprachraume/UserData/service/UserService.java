@@ -199,6 +199,7 @@ public class UserService implements UserDetailsService {
         double max = rating +1;
         return userRepository.findAllByRatingBetween(rating,max);
     }
+
     public List<UserData> getUsersByRating(Double rating) {
         double max = rating +1;
         return userRepository.findAllByRatingBetween(rating,max);
