@@ -37,6 +37,13 @@ public class Room {
     @Column(name = "duration")
     private Long duration;
 
+    //TODO добавить уровень владения языком в языковой комнате
+    //TODO добавить категорию(отдельная сущность) + добавление новой категории
+    // TODO приват комната или нет
+
+
+
+
     @Column(name = "status")
     private Boolean status;
     @Column(name = "age")
@@ -59,6 +66,6 @@ public class Room {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
     @JsonBackReference("creator-rooms")
-    private UserData creator;  // Связь с создателем комнаты
+    private UserData creator;
 
 }

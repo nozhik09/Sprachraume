@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/room/adminRoom/invite/accept").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/room/adminRoom/accept").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/room/adminRoom/decline").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/room/allRoom").permitAll()
                         .requestMatchers(HttpMethod.POST, "/language/addNativeLanguage").permitAll()
                         .requestMatchers(HttpMethod.GET, "/language").permitAll()
                         .requestMatchers(HttpMethod.GET, "/language/nativeLanguage").permitAll()

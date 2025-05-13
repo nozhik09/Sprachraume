@@ -3,7 +3,7 @@ package com.example.Sprachraume.Rooms.controller;
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
-import com.example.Sprachraume.Rooms.entity.CreateNewRoomDTORequest;
+import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -186,6 +186,15 @@ public class RoomController {
     public Participant declineRequestByAdmin(@RequestParam Long participantId) {
         return roomService.declineRequestByAdmin(participantId);
     }
+
+    @Operation(summary = "Все созданыекомнаты", description = "Получить список всех доступных комнат")
+    @GetMapping("/allRoom")
+    private List<Room> getAllRoom(){
+        return roomService.getAllRoom();
+    }
+
+
+
     
     
 
@@ -198,6 +207,9 @@ public class RoomController {
     ) {
         return roomService.filterRooms(language, status, minAge);
     }
+
+
+
 
     // @GetMapping("/allRoom")
 //    public List<Room> getAllParticipantRoom(@RequestParam Long participantId) {
