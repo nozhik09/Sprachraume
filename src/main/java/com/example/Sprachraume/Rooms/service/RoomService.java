@@ -7,7 +7,7 @@ import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantStatus;
 import com.example.Sprachraume.Participant.entity.ParticipantType;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
-import com.example.Sprachraume.Rooms.entity.CreateNewRoomDTORequest;
+import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
@@ -48,7 +48,11 @@ public class RoomService {
         if (room.getEndTime().isBefore(room.getStartTime())) {
             throw new IllegalArgumentException("End time must be after start time");
         }
+
         UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not Found"));
+        if (userData.getRating()<3D){
+            throw new UserHaveLowRating("You have low rating");
+        }
         Room newRoom = new Room();
         newRoom.setCreator(userData);
         newRoom.setStatus(true);

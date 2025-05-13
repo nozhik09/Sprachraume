@@ -1,4 +1,4 @@
-package com.example.Sprachraume.Rooms.DTO;
+package com.example.Sprachraume.Rooms.entity.DTO;
 
 
 import lombok.AllArgsConstructor;
