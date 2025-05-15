@@ -1,6 +1,7 @@
 package com.example.Sprachraume.Rooms.entity.DTO;
 
 
+import com.example.Sprachraume.Category.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,9 @@ public class CreateNewRoomDTORequest {
     private boolean status;
     private Long age;
     private String language;
+    private String languageLvl;
+    private String category;
+    private Boolean privateRoom;
     private Long minQuantity;
     private Long maxQuantity;
 }
