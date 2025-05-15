@@ -1,6 +1,8 @@
 package com.example.Sprachraume.Rooms.service;
 
 
+import com.example.Sprachraume.Category.Category;
+import com.example.Sprachraume.Category.CategoryRepository;
 import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
 import com.example.Sprachraume.Participant.entity.Participant;
@@ -33,21 +35,26 @@ public class RoomService {
     private final ParticipantRepository participantRepository;
 
     private final DailyRoomService dailyRoomService;
+    private final CategoryRepository categoryRepository;
 
 
     public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
-            throw new IllegalArgumentException("Topic is required");
+            throw new NullOrEmpty("Topic is required");
         }
         if (room.getLanguage() == null || room.getLanguage().isEmpty()) {
-            throw new IllegalArgumentException("Language is required");
+            throw new NullOrEmpty("Language is required");
         }
         if (room.getStartTime() == null) {
-            throw new IllegalArgumentException("Start time is required");
+            throw new NullOrEmpty("Start time is required");
         }
         if (room.getEndTime().isBefore(room.getStartTime())) {
             throw new IllegalArgumentException("End time must be after start time");
         }
+        if (room.getPrivateRoom()==null){
+            throw new NullOrEmpty("Status mast be not null");
+        }
+        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(()-> new UserNotFoundException("Выбранной категории не существует"));
 
         UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not Found"));
         if (userData.getRating()<3D){
@@ -62,6 +69,8 @@ public class RoomService {
         newRoom.setLanguage(room.getLanguage());
         newRoom.setStartTime(room.getStartTime());
         newRoom.setEndTime(room.getEndTime());
+        newRoom.setCategory(category);
+        newRoom.setPrivateRoom(room.getPrivateRoom());
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
         newRoom.setDuration(durationInMinutes);
 

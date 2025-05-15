@@ -1,6 +1,7 @@
 package com.example.Sprachraume.Rooms.entity;
 
 
+import com.example.Sprachraume.Category.Category;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -37,12 +39,15 @@ public class Room {
     @Column(name = "duration")
     private Long duration;
 
-    //TODO добавить уровень владения языком в языковой комнате
-    //TODO добавить категорию(отдельная сущность) + добавление новой категории
-    // TODO приват комната или нет
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
+    @Column(name = "private_room")
+    private Boolean privateRoom;
 
-
+    @Column(name = "language_lvl")
+    private String languageLvl;
 
     @Column(name = "status")
     private Boolean status;
@@ -65,7 +70,7 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
-    @JsonBackReference("creator-rooms")
+    @JsonIgnoreProperties({"rooms", "hibernateLazyInitializer", "handler"})
     private UserData creator;
 
 }

@@ -25,4 +25,5 @@
     <include file="v.0.1.9/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.0 addEnumForParticipant/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.1 addCollumRooms/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.2addCollumRoomsAndAddCategory/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
