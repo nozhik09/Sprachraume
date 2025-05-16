@@ -52,8 +52,8 @@
         @Column(name = "birthday_date")
         private LocalDate birthdayDate;
 
-        @Column(name = "foto")
-        private String foto;
+        @Column(name = "avatar")
+        private String avatar;
 
         //TODO Переименовать на автар
 

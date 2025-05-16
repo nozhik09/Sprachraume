@@ -17,15 +17,26 @@ import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -104,7 +115,7 @@ public class UserService implements UserDetailsService {
         userData.setNickname(requestDto.getNickName());
         userData.setName(requestDto.getName());
         userData.setSurname(requestDto.getSurname());
-        userData.setFoto(requestDto.getFoto());
+        userData.setAvatar(requestDto.getFoto());
         userData.setBirthdayDate(requestDto.getBirthdayDate());
         userData.setInternalCurrency(requestDto.getInternalCurrency());
         userRepository.save(userData);
@@ -204,6 +215,62 @@ public class UserService implements UserDetailsService {
         double max = rating +1;
         return userRepository.findAllByRatingBetween(rating,max);
     }
+
+
+
+        public String uploadAvatar(Long userId, MultipartFile file) throws IOException {
+            UserData user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            String uploadDir = "uploads/avatars/";
+            String originalFileName = file.getOriginalFilename();
+            String extension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+            String filename = UUID.randomUUID() + extension;
+
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(filename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            String avatarUrl = "/api/user/avatar/" + filename;
+            user.setAvatar(avatarUrl);
+            userRepository.save(user);
+
+            return avatarUrl;
+        }
+
+
+    public ResponseEntity<Resource> getAvatarByUserId(Long userId) throws IOException {
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        String avatarPath = user.getAvatar();
+
+        if (avatarPath == null || avatarPath.isBlank()) {
+            throw  new UserNotFoundException("avatar not found");
+        }
+
+        String filename = Paths.get(avatarPath).getFileName().toString();
+        Path filePath = Paths.get("uploads/avatars").resolve(filename);
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw  new UserNotFoundException("sdsada");
+        }
+
+        String contentType = Files.probeContentType(filePath);
+        MediaType mediaType = contentType != null
+                ? MediaType.parseMediaType(contentType)
+                : MediaType.APPLICATION_OCTET_STREAM;
+
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(resource);
+    }
+
 
 
 

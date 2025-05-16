@@ -26,4 +26,5 @@
     <include file="v.0.2.0 addEnumForParticipant/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.1 addCollumRooms/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.2addCollumRoomsAndAddCategory/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.3rename-colum-foto-to-avatar/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

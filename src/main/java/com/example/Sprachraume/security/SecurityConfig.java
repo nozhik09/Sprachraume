@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users/rating").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/ratingBetween").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/findAnyUsers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/avatar/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/uploadAvatar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/room").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/id").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/allRoom").permitAll()
