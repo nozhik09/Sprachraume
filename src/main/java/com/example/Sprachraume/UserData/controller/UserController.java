@@ -12,9 +12,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -78,43 +82,77 @@ public class UserController {
     }
 
     @PutMapping("/block")
-    public UserData blockUser(@RequestParam Long admin,@RequestParam Long user){
-        return userService.blockUser(admin,user);
+    public UserData blockUser(@RequestParam Long admin, @RequestParam Long user) {
+        return userService.blockUser(admin, user);
 
     }
+
     @PutMapping("/unlock")
-    public UserData unlockUser(@RequestParam Long admin,@RequestParam Long user){
-        return userService.unlockUser(admin,user);
+    public UserData unlockUser(@RequestParam Long admin, @RequestParam Long user) {
+        return userService.unlockUser(admin, user);
     }
+
     @PutMapping("/setAdmin")
-    public UserData appointAnAdministrator(@RequestParam Long admin,@RequestParam Long user){
-        return userService.appointAnAdministrator(admin,user);
+    public UserData appointAnAdministrator(@RequestParam Long admin, @RequestParam Long user) {
+        return userService.appointAnAdministrator(admin, user);
     }
 
     @DeleteMapping("/delete")
-    public String deleteAccount(@RequestParam Long id){
+    public String deleteAccount(@RequestParam Long id) {
         return userService.deleteAccount(id);
     }
 
 
     @GetMapping("/blockingUsers")
-    public List<UserData> getAllBlockUsers(@RequestParam Boolean status){
+    public List<UserData> getAllBlockUsers(@RequestParam Boolean status) {
         return userService.getAllBlockUsers(status);
     }
 
     @GetMapping("/ratingBetween")
-    public List<UserData> getUserByRatingBetween(@RequestParam Double rating){
+    public List<UserData> getUserByRatingBetween(@RequestParam Double rating) {
         return userService.getUsersByRatingBetween(rating);
     }
 
     @GetMapping("/rating")
-    public List<UserData> getUserByRating(@RequestParam Double rating){
+    public List<UserData> getUserByRating(@RequestParam Double rating) {
         return userService.getUsersByRating(rating);
     }
 
-@GetMapping("/findAnyUsers")
+    @GetMapping("/findAnyUsers")
     public List<UserData> searchUsers(@RequestParam String keyword) {
         return userService.searchUsers(keyword);
+    }
+
+    @Operation(
+            summary = "Upload user avatar",
+            description = "Uploads an image file and sets it as the user's avatar"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid file")
+    })
+    @PostMapping("/uploadAvatar")
+    public ResponseEntity<String> uploadAvatar(
+            @RequestParam Long userId,
+            @RequestParam MultipartFile file) throws IOException {
+
+        String avatarUrl = userService.uploadAvatar(userId, file);
+        return ResponseEntity.ok("Uploaded successfully. URL: " + avatarUrl);
+    }
+
+
+    @Operation(
+            summary = "Get user avatar by userId",
+            description = "Returns the user's avatar image based on the avatar path stored in DB"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Avatar image"),
+            @ApiResponse(responseCode = "404", description = "User or file not found")
+    })
+    @GetMapping("/avatar/{userId}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable Long userId) throws IOException {
+        return userService.getAvatarByUserId(userId);
     }
 
 }
