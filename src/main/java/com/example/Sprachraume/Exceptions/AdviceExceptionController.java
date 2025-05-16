@@ -11,46 +11,51 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @RequiredArgsConstructor
 @ControllerAdvice
 public class AdviceExceptionController {
-    @ExceptionHandler(UserHaveLowRating.class)
-    public ResponseEntity<ApiExceptionHanding> userHaveLowRating (UserHaveLowRating e) {
+    @ExceptionHandler(MaxQuantityException.class)
+    public ResponseEntity<ApiExceptionHanding> maxQuantityException (MaxQuantityException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+    }
 
+
+    @ExceptionHandler(UserHaveLowRatingException.class)
+    public ResponseEntity<ApiExceptionHanding> userHaveLowRating (UserHaveLowRatingException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(UserTooYoungException.class)
     public ResponseEntity<ApiExceptionHanding> userTooYoungException(UserTooYoungException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
 
     }
-    @ExceptionHandler(UserBirthdayNotSet.class)
-    public ResponseEntity<ApiExceptionHanding> userBirthdayNotSet(UserBirthdayNotSet e) {
+    @ExceptionHandler(UserBirthdayNotSetException.class)
+    public ResponseEntity<ApiExceptionHanding> userBirthdayNotSet(UserBirthdayNotSetException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AlreadyUsed.class)
-    public ResponseEntity<ApiExceptionHanding> alreadyUsed(AlreadyUsed e) {
+    @ExceptionHandler(AlreadyUsedException.class)
+    public ResponseEntity<ApiExceptionHanding> alreadyUsed(AlreadyUsedException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
     }
-    @ExceptionHandler(LanguageNotFound.class)
-    public ResponseEntity<ApiExceptionHanding> languageNotFound(LanguageNotFound e) {
+    @ExceptionHandler(LanguageNotFoundException.class)
+    public ResponseEntity<ApiExceptionHanding> languageNotFound(LanguageNotFoundException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NullOrEmpty.class)
-    public ResponseEntity<ApiExceptionHanding> nullOrEmpty(NullOrEmpty e) {
+    @ExceptionHandler(NullOrEmptyException.class)
+    public ResponseEntity<ApiExceptionHanding> nullOrEmpty(NullOrEmptyException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 
 
 
-    @ExceptionHandler(InvitationAlreadyResponded.class)
-    public ResponseEntity<ApiExceptionHanding> invitationAlreadyResponded(InvitationAlreadyResponded e) {
+    @ExceptionHandler(InvitationAlreadyRespondedException.class)
+    public ResponseEntity<ApiExceptionHanding> invitationAlreadyResponded(InvitationAlreadyRespondedException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
     }
 
 
 
-    @ExceptionHandler(EmailIsNotValid.class)
-    public ResponseEntity<ApiExceptionHanding> emailIsNotValid(EmailIsNotValid e) {
+    @ExceptionHandler(EmailIsNotValidException.class)
+    public ResponseEntity<ApiExceptionHanding> emailIsNotValid(EmailIsNotValidException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.toString()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
@@ -59,8 +64,8 @@ public class AdviceExceptionController {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(LanguageIsAdded.class)
-    public ResponseEntity<ApiExceptionHanding> emailIsUsing(LanguageIsAdded e) {
+    @ExceptionHandler(LanguageIsAddedException.class)
+    public ResponseEntity<ApiExceptionHanding> emailIsUsing(LanguageIsAddedException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
     }
 
@@ -68,8 +73,8 @@ public class AdviceExceptionController {
     public ResponseEntity<ApiExceptionHanding> invalidRole(InvalidRoleException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(PasswordIsNotValid.class)
-    public ResponseEntity<ApiExceptionHanding> PasswordIsNotValid(PasswordIsNotValid e) {
+    @ExceptionHandler(PasswordIsNotValidException.class)
+    public ResponseEntity<ApiExceptionHanding> PasswordIsNotValid(PasswordIsNotValidException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.toString()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
@@ -84,13 +89,13 @@ public class AdviceExceptionController {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(UserIsBlocking.class)
-    public ResponseEntity<ApiExceptionHanding> userForbidden(UserIsBlocking e) {
+    @ExceptionHandler(UserIsBlockingException.class)
+    public ResponseEntity<ApiExceptionHanding> userForbidden(UserIsBlockingException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.FORBIDDEN.toString()), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(InvalidPassword.class)
-    public ResponseEntity<ApiExceptionHanding> InvalidPassword(InvalidPassword e) {
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ApiExceptionHanding> InvalidPassword(InvalidPasswordException e) {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 

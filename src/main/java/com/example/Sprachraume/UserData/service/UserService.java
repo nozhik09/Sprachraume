@@ -45,7 +45,7 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Request cannot be empty");
         }
         if (!isValidEmail(requestDto.getEmail())) {
-            throw new EmailIsNotValid("Incorrect email format");
+            throw new EmailIsNotValidException("Incorrect email format");
         }
 
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
@@ -53,7 +53,7 @@ public class UserService implements UserDetailsService {
         }
 
         if (!isValidPassword(requestDto.getPassword())) {
-            throw new PasswordIsNotValid("The password must contain at least one capital letter, one number and one special character");
+            throw new PasswordIsNotValidException("The password must contain at least one capital letter, one number and one special character");
         }
         UserData userData = new UserData();
         userData.setEmail(requestDto.getEmail());
@@ -115,7 +115,7 @@ public class UserService implements UserDetailsService {
         UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
         if (!user.getStatus()) {
-            throw new AlreadyUsed(String.format("User with id %s already block", userId));
+            throw new AlreadyUsedException(String.format("User with id %s already block", userId));
         } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
             user.setStatus(false);
             userRepository.save(user);
@@ -130,7 +130,7 @@ public class UserService implements UserDetailsService {
         UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
         if (user.getStatus()) {
-            throw new AlreadyUsed(String.format("User with id %s already unlock", userId));
+            throw new AlreadyUsedException(String.format("User with id %s already unlock", userId));
         } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
             user.setStatus(true);
             userRepository.save(user);
@@ -148,9 +148,9 @@ public class UserService implements UserDetailsService {
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
 
         if (!user.getStatus()) {
-            throw new UserIsBlocking("You cannot assign a blocked user admin, first unlock the user");
+            throw new UserIsBlockingException("You cannot assign a blocked user admin, first unlock the user");
         } else if (user.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::equals)) {
-            throw new AlreadyUsed(String.format("User with id %s already admin", userId));
+            throw new AlreadyUsedException(String.format("User with id %s already admin", userId));
         } else if (admin.getRoles().stream().map(Role::getTitle).anyMatch("ROLE_ADMIN"::contains)) {
             Role role = roleRepository.findByTitle("ROLE_ADMIN");
             user.getRoles().add(role);
@@ -228,7 +228,6 @@ public class UserService implements UserDetailsService {
         return userRepository.searchUsers(keyword);
     }
 
-    //TODO ++++++Поииск по имени по фамилии никнейм или имейл
 
 
 }

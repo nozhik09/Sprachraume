@@ -1,11 +1,10 @@
 package com.example.Sprachraume.security.sec_service;
 
 
-import com.example.Sprachraume.Exceptions.Exception.EmailIsNotValid;
-import com.example.Sprachraume.Exceptions.Exception.InvalidPassword;
-import com.example.Sprachraume.Exceptions.Exception.PasswordIsNotValid;
-import com.example.Sprachraume.Exceptions.Exception.UserIsBlocking;
-import com.example.Sprachraume.Languages.entity.LearningLanguage;
+import com.example.Sprachraume.Exceptions.Exception.EmailIsNotValidException;
+import com.example.Sprachraume.Exceptions.Exception.InvalidPasswordException;
+import com.example.Sprachraume.Exceptions.Exception.PasswordIsNotValidException;
+import com.example.Sprachraume.Exceptions.Exception.UserIsBlockingException;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.service.UserService;
@@ -41,13 +40,13 @@ public class AuthService {
             throw new IllegalArgumentException("Имеил не может быть пустым");
         }
         if (!isValidEmail(email)) {
-            throw new EmailIsNotValid(String.format("Вам имеил %s не корректно введен", email));
+            throw new EmailIsNotValidException(String.format("Вам имеил %s не корректно введен", email));
         }
         UserData foundUser = (UserData) userService.loadUserByUsername(email);
         if (!foundUser.getStatus()) {
-            throw new UserIsBlocking("Пользователь заблоктирован");
+            throw new UserIsBlockingException("Пользователь заблоктирован");
         } else if (!isValidPassword(requestDTO.getPassword())) {
-            throw new PasswordIsNotValid("Пароль должен содержать 8 симоволов,1 спец знак , заглавную букву и 1 цифру");
+            throw new PasswordIsNotValidException("Пароль должен содержать 8 симоволов,1 спец знак , заглавную букву и 1 цифру");
         } else if (bCryptPasswordEncoder.matches(requestDTO.getPassword(), foundUser.getPassword())) {
 
             String accessToken = tokenService.generateAccessToken(foundUser);
@@ -63,7 +62,7 @@ public class AuthService {
 
 
         }else{
-            throw new InvalidPassword("Вы ввели неверный пароль");
+            throw new InvalidPasswordException("Вы ввели неверный пароль");
         }
     }
 

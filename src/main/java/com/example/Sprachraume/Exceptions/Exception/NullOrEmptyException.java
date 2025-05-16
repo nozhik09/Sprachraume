@@ -2,8 +2,8 @@ package com.example.Sprachraume.Exceptions.Exception;
 
 import com.example.Sprachraume.Exceptions.GenerateApiException;
 
-public class NullOrEmpty extends GenerateApiException {
-    public NullOrEmpty(String message) {
+public class NullOrEmptyException extends GenerateApiException {
+    public NullOrEmptyException(String message) {
         super(message);
     }
 }

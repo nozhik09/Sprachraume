@@ -39,6 +39,7 @@ public class Room {
     @Column(name = "duration")
     private Long duration;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -59,7 +60,7 @@ public class Room {
     private Long minQuantity;
     @Column(name = "max_quantity")
     private Long maxQuantity;
-    //TODO добавить категорию
+
     @Column(name = "room_url")
     private String roomUrl;
 

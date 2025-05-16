@@ -2,9 +2,8 @@ package com.example.Sprachraume.Exceptions.Exception;
 
 import com.example.Sprachraume.Exceptions.GenerateApiException;
 
-public class LanguageIsAdded extends GenerateApiException {
-
-    public LanguageIsAdded(String message){
+public class LanguageNotFoundException extends GenerateApiException {
+    public LanguageNotFoundException(String message) {
         super(message);
     }
 }
