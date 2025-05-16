@@ -1,10 +1,9 @@
 package com.example.Sprachraume.Rooms.entity;
 
 
-import com.example.Sprachraume.Category.Category;
+import com.example.Sprachraume.Category.entity.Category;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.UserData.entity.UserData;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

@@ -1,7 +1,7 @@
 package com.example.Sprachraume.Rooms.service;
 
 
-import com.example.Sprachraume.Category.Category;
+import com.example.Sprachraume.Category.entity.Category;
 import com.example.Sprachraume.Category.CategoryRepository;
 import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
@@ -57,7 +57,7 @@ public class RoomService {
         if (room.getLanguageLvl() == null) {
             throw new NullOrEmptyException("LanguageLvl mast be not null");
         }
-        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(() -> new UserNotFoundException("Выбранной категории не существует"));
+        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(() -> new UserNotFoundException("The selected category does not exist"));
 
         UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not Found"));
         if (userData.getRating() < 3D) {
@@ -340,9 +340,7 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
-    }
+
 
 
 //    public List<Room> getAllParticipantRoom(Long participantId) {

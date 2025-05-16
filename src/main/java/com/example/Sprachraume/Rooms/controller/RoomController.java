@@ -1,7 +1,6 @@
 package com.example.Sprachraume.Rooms.controller;
 
 
-import com.example.Sprachraume.Category.Category;
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
@@ -194,10 +193,7 @@ public class RoomController {
         return roomService.getAllRoom();
     }
 
-    @GetMapping("/allCategory")
-    public List<Category> getAllCategory() {
-        return roomService.getAllCategory();
-    }
+
 
     @Operation(summary = "Отфильтровать комнаты по нескольким параметрам(Язык,статус комнаты,минимальный возраст, категория", description = "Получить список комнат по фильтрам")
     @GetMapping("/filter")

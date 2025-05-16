@@ -1,7 +1,6 @@
 package com.example.Sprachraume.Rooms.entity.DTO;
 
 
-import com.example.Sprachraume.Category.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
