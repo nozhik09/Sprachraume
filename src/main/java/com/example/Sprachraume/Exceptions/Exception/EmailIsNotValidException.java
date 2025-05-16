@@ -2,8 +2,8 @@ package com.example.Sprachraume.Exceptions.Exception;
 
 import com.example.Sprachraume.Exceptions.GenerateApiException;
 
-public class EmailIsNotValid extends GenerateApiException {
-    public EmailIsNotValid(String message) {
+public class EmailIsNotValidException extends GenerateApiException {
+    public EmailIsNotValidException(String message) {
         super(message);
     }
 

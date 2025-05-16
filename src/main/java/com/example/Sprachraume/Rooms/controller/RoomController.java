@@ -1,6 +1,7 @@
 package com.example.Sprachraume.Rooms.controller;
 
 
+import com.example.Sprachraume.Category.Category;
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
@@ -60,6 +61,7 @@ public class RoomController {
     public Participant acceptInvitationByUser(@RequestParam Long participantId, @RequestParam Long roomId) {
         return roomService.acceptInvitationByUser(participantId, roomId);
     }
+
     @Operation(summary = "Decline invitation to a room", description = "User declines an invitation to a specific room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invitation successfully declined", content = @Content(mediaType = "application/json")),
@@ -98,7 +100,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/participant/invite/received")
-    public List<Room> getPendingInvitationsReceivedByUser(Long userId){
+    public List<Room> getPendingInvitationsReceivedByUser(Long userId) {
         return roomService.getPendingInvitationsReceivedByUser(userId);
     }
 
@@ -130,7 +132,7 @@ public class RoomController {
     })
     @PostMapping("/adminRoom/invite")
     public Participant inviteUserToRoom(@RequestParam Long userId, @RequestParam Long roomId) {
-        return roomService.inviteUserToRoom(userId,roomId);
+        return roomService.inviteUserToRoom(userId, roomId);
     }
 
     @Operation(summary = "Get pending invitations sent by admin", description = "Получите все ожидающие приглашения, отправленные Room Admin")
@@ -149,10 +151,9 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/adminRoom/invite/participant")
-    public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId){
-        return roomService.getPendingRequestsSentByUsers(creatorId,roomId);
+    public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId) {
+        return roomService.getPendingRequestsSentByUsers(creatorId, roomId);
     }
-
 
 
     @Operation(summary = "Get accepted invitations", description = "Администратор получает список пользователей, которые приняли его приглашения")
@@ -161,7 +162,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/adminRoom/invite/accept")
-    public List<Participant> getAcceptedInviteByAdmin(Long creatorId, Long roomId){
+    public List<Participant> getAcceptedInviteByAdmin(Long creatorId, Long roomId) {
         return roomService.getAcceptedInviteByAdmin(creatorId, roomId);
     }
 
@@ -189,26 +190,25 @@ public class RoomController {
 
     @Operation(summary = "Все созданыекомнаты", description = "Получить список всех доступных комнат")
     @GetMapping("/allRoom")
-    private List<Room> getAllRoom(){
+    public List<Room> getAllRoom() {
         return roomService.getAllRoom();
     }
 
+    @GetMapping("/allCategory")
+    public List<Category> getAllCategory() {
+        return roomService.getAllCategory();
+    }
 
-
-    
-    
-
-
+    @Operation(summary = "Отфильтровать комнаты по нескольким параметрам(Язык,статус комнаты,минимальный возраст, категория", description = "Получить список комнат по фильтрам")
     @GetMapping("/filter")
     public List<Room> filterRooms(
             @RequestParam(required = false) String language,
             @RequestParam(required = false) Boolean status,
-            @RequestParam(required = false) Long minAge
+            @RequestParam(required = false) Long minAge,
+            @RequestParam(required = false) String category
     ) {
-        return roomService.filterRooms(language, status, minAge);
+        return roomService.filterRooms(language, status, minAge,category);
     }
-
-
 
 
     // @GetMapping("/allRoom")

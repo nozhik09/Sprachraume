@@ -29,20 +29,20 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
 
     public NativeLanguages addNativeLanguages(AddLanguageDTO addLanguageDTO) {
         if (addLanguageDTO.getUserId() == null) {
-            throw new NullOrEmpty("User ID must not be null");
+            throw new NullOrEmptyException("User ID must not be null");
         }
         UserData userData = userRepository.findById(addLanguageDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", addLanguageDTO.getUserId())));
 
         Languages languages = languagesRepository.findByName(addLanguageDTO.getLanguageName()).orElseGet(() -> {
             if (addLanguageDTO.getLanguageName() == null || addLanguageDTO.getLanguageName().isEmpty()) {
-                throw new NullOrEmpty("Language name must not be null or empty for a new language");
+                throw new NullOrEmptyException("Language name must not be null or empty for a new language");
             }
-            throw new LanguageNotFound("Such a language does not exist");
+            throw new LanguageNotFoundException("Such a language does not exist");
         });
         if (userData.getNativeLanguages().stream()
                 .anyMatch(ll -> ll.getLanguage().getId().equals(languages.getId()))) {
-            throw new LanguageIsAdded(
+            throw new LanguageIsAddedException(
                     String.format("Language %s is already added for user %s",
                             addLanguageDTO.getLanguageName(), addLanguageDTO.getUserId()));
         }
@@ -62,11 +62,11 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", addLearningLanguageDTO.getUserId())));
 
         Languages languages = languagesRepository.findByName(addLearningLanguageDTO.getLanguageName())
-                .orElseThrow(() -> new LanguageNotFound("Such a language does not exist"));
+                .orElseThrow(() -> new LanguageNotFoundException("Such a language does not exist"));
 
         if (userData.getLearningLanguages().stream()
                 .anyMatch(ll -> ll.getLanguage().getId().equals(languages.getId()))) {
-            throw new LanguageIsAdded(
+            throw new LanguageIsAddedException(
                     String.format("Language %s is already added for user %s",
                             addLearningLanguageDTO.getLanguageName(), addLearningLanguageDTO.getUserId()));
         }
@@ -125,9 +125,9 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         }
 
         UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFound("Language not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFoundException("Language not found"));
         LearningLanguage learningLanguage = learningLanguageRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
-        -> new AlreadyUsed("User is not learning this language"));
+        -> new AlreadyUsedException("User is not learning this language"));
 
 
         userData.getLearningLanguages().remove(learningLanguage);
@@ -144,9 +144,9 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         }
 
         UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFound("Language not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFoundException("Language not found"));
         NativeLanguages nativeLanguages = nativeLanguagesRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
-                -> new AlreadyUsed("User is not learning this language"));
+                -> new AlreadyUsedException("User is not learning this language"));
 
 
         userData.getNativeLanguages().remove(nativeLanguages);

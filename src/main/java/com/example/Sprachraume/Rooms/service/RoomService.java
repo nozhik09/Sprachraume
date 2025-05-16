@@ -40,25 +40,28 @@ public class RoomService {
 
     public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
-            throw new NullOrEmpty("Topic is required");
+            throw new NullOrEmptyException("Topic is required");
         }
         if (room.getLanguage() == null || room.getLanguage().isEmpty()) {
-            throw new NullOrEmpty("Language is required");
+            throw new NullOrEmptyException("Language is required");
         }
         if (room.getStartTime() == null) {
-            throw new NullOrEmpty("Start time is required");
+            throw new NullOrEmptyException("Start time is required");
         }
         if (room.getEndTime().isBefore(room.getStartTime())) {
             throw new IllegalArgumentException("End time must be after start time");
         }
-        if (room.getPrivateRoom()==null){
-            throw new NullOrEmpty("Status mast be not null");
+        if (room.getPrivateRoom() == null) {
+            throw new NullOrEmptyException("Status mast be not null");
         }
-        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(()-> new UserNotFoundException("Выбранной категории не существует"));
+        if (room.getLanguageLvl() == null) {
+            throw new NullOrEmptyException("LanguageLvl mast be not null");
+        }
+        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(() -> new UserNotFoundException("Выбранной категории не существует"));
 
         UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not Found"));
-        if (userData.getRating()<3D){
-            throw new UserHaveLowRating("You have low rating");
+        if (userData.getRating() < 3D) {
+            throw new UserHaveLowRatingException("You have low rating");
         }
         Room newRoom = new Room();
         newRoom.setCreator(userData);
@@ -70,12 +73,13 @@ public class RoomService {
         newRoom.setStartTime(room.getStartTime());
         newRoom.setEndTime(room.getEndTime());
         newRoom.setCategory(category);
+        newRoom.setLanguageLvl(room.getLanguageLvl());
         newRoom.setPrivateRoom(room.getPrivateRoom());
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
         newRoom.setDuration(durationInMinutes);
 
         if (room.getMaxQuantity() > 25) {
-            throw new IllegalArgumentException("Max Quantity 25 participant");
+            throw new MaxQuantityException("Max Quantity 25 participant");
         } else {
             newRoom.setMaxQuantity(room.getMaxQuantity());
         }
@@ -96,7 +100,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (user.getBirthdayDate() == null) {
-            throw new UserBirthdayNotSet("User does not have a birthday set");
+            throw new UserBirthdayNotSetException("User does not have a birthday set");
         }
 
         int userAge = calculateAge(user.getBirthdayDate(), LocalDate.now());
@@ -115,7 +119,7 @@ public class RoomService {
                 participant.setParticipantType(ParticipantType.INVITED_BY_CREATOR);
                 return participantRepository.save(participant);
             } else {
-                throw new InvitationAlreadyResponded("User is already invited or participating");
+                throw new InvitationAlreadyRespondedException("User is already invited or participating");
             }
         }
 
@@ -137,7 +141,7 @@ public class RoomService {
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
 
         if (participant.getStatus() != ParticipantStatus.PENDING) {
-            throw new InvitationAlreadyResponded("Invitation already responded to");
+            throw new InvitationAlreadyRespondedException("Invitation already responded to");
         }
         //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
 
@@ -154,7 +158,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
 
         if (participant.getStatus() != ParticipantStatus.PENDING) {
-            throw new InvitationAlreadyResponded("Invitation already responded to");
+            throw new InvitationAlreadyRespondedException("Invitation already responded to");
         }
 
         participant.setStatus(ParticipantStatus.DECLINED);
@@ -172,7 +176,7 @@ public class RoomService {
 
         Optional<Participant> existingRequest = participantRepository.findByRoomAndUser(room, user);
         if (existingRequest.isPresent()) {
-            throw new AlreadyUsed("You have already requested to join this room or are already a participant");
+            throw new AlreadyUsedException("You have already requested to join this room or are already a participant");
         }
         //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
         Participant participant = new Participant();
@@ -209,7 +213,7 @@ public class RoomService {
         return participantRepository.findAllByRoomAndStatus(room, ParticipantStatus.ACCEPTED);
     }
 
-     //Админ смотрит заявки на вступление ОТ Юзера
+    //Админ смотрит заявки на вступление ОТ Юзера
     public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found"));
@@ -289,7 +293,7 @@ public class RoomService {
     }
 
 
-    public List<Room> filterRooms(String language, Boolean status, Long minAge) {
+    public List<Room> filterRooms(String language, Boolean status, Long minAge,String category) {
         Specification<Room> spec = Specification.where(null);
 
         if (language != null && !language.isEmpty()) {
@@ -306,6 +310,12 @@ public class RoomService {
             spec = spec.and((root, query, builder) ->
                     builder.greaterThanOrEqualTo(root.get("age"), minAge));
         }
+
+        if (category != null && !category.isEmpty()) {
+            spec = spec.and((root, query, builder) ->
+                    builder.greaterThanOrEqualTo(root.get("age"), category));
+        }
+
 
         return roomRepository.findAll(spec);
     }
@@ -330,6 +340,10 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
+    public List<Category> getAllCategory() {
+        return categoryRepository.findAll();
+    }
+
 
 //    public List<Room> getAllParticipantRoom(Long participantId) {
 //        return roomRepository.findRoomByParticipantsId(participantId);
@@ -343,7 +357,6 @@ public class RoomService {
             return 0;
         }
     }
-    //TODO сделать фильтры по языку по статусу по юзеру по возрасту
 
 
 }

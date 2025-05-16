@@ -2,8 +2,9 @@ package com.example.Sprachraume.Exceptions.Exception;
 
 import com.example.Sprachraume.Exceptions.GenerateApiException;
 
-public class UserIsBlocking extends GenerateApiException {
-    public UserIsBlocking(String message) {
+public class InvitationAlreadyRespondedException extends GenerateApiException {
+
+    public InvitationAlreadyRespondedException(String message) {
         super(message);
     }
 }
