@@ -49,6 +49,9 @@ public class Room {
     @Column(name = "language_lvl")
     private String languageLvl;
 
+    @Column(name = "quantity_participant")
+    private Long quantityParticipant;
+
     @Column(name = "status")
     private Boolean status;
     @Column(name = "age")

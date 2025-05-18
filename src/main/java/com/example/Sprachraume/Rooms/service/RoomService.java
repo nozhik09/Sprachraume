@@ -39,6 +39,9 @@ public class RoomService {
 
 
     public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
+        if (room.getMaxQuantity()==null){
+            throw new NullOrEmptyException("Max Quantity mast be not null");
+        }
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
             throw new NullOrEmptyException("Topic is required");
         }
@@ -75,6 +78,7 @@ public class RoomService {
         newRoom.setCategory(category);
         newRoom.setLanguageLvl(room.getLanguageLvl());
         newRoom.setPrivateRoom(room.getPrivateRoom());
+        newRoom.setQuantityParticipant(1L);
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
         newRoom.setDuration(durationInMinutes);
 
@@ -147,6 +151,7 @@ public class RoomService {
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
+        room.setQuantityParticipant(room.getQuantityParticipant()+1);
         roomRepository.save(room);
 
         return participantRepository.save(participant);
