@@ -76,6 +76,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/language/learningnative").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/language/deleteLearning").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/language/deleteNative").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/category/add").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/category/allCategory").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)

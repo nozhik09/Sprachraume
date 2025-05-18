@@ -1,4 +1,4 @@
-package com.example.Sprachraume.Category;
+package com.example.Sprachraume.Category.entity;
 
 
 import jakarta.persistence.*;

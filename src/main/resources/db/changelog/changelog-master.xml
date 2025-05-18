@@ -27,4 +27,6 @@
     <include file="v.0.2.1 addCollumRooms/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.2addCollumRoomsAndAddCategory/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.3rename-colum-foto-to-avatar/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.4add-collum-to-table-room-quantityParticipant/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.5rename-collum-quantityParticipant-in-table-room/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

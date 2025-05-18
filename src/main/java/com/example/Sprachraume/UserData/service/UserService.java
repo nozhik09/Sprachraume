@@ -295,6 +295,13 @@ public class UserService implements UserDetailsService {
         return userRepository.searchUsers(keyword);
     }
 
-
+    private boolean userIsAdmin(UserData user) {
+        for (Role role : user.getRoles()) {
+            if ("ADMIN".equals(role.getTitle())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

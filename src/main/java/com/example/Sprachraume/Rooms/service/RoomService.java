@@ -1,7 +1,7 @@
 package com.example.Sprachraume.Rooms.service;
 
 
-import com.example.Sprachraume.Category.Category;
+import com.example.Sprachraume.Category.entity.Category;
 import com.example.Sprachraume.Category.CategoryRepository;
 import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
@@ -39,6 +39,9 @@ public class RoomService {
 
 
     public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
+        if (room.getMaxQuantity()==null){
+            throw new NullOrEmptyException("Max Quantity mast be not null");
+        }
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
             throw new NullOrEmptyException("Topic is required");
         }
@@ -57,7 +60,7 @@ public class RoomService {
         if (room.getLanguageLvl() == null) {
             throw new NullOrEmptyException("LanguageLvl mast be not null");
         }
-        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(() -> new UserNotFoundException("Выбранной категории не существует"));
+        Category category = categoryRepository.findByName(room.getCategory()).orElseThrow(() -> new UserNotFoundException("The selected category does not exist"));
 
         UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not Found"));
         if (userData.getRating() < 3D) {
@@ -75,6 +78,7 @@ public class RoomService {
         newRoom.setCategory(category);
         newRoom.setLanguageLvl(room.getLanguageLvl());
         newRoom.setPrivateRoom(room.getPrivateRoom());
+        newRoom.setQuantityParticipant(1L);
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
         newRoom.setDuration(durationInMinutes);
 
@@ -147,6 +151,7 @@ public class RoomService {
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
+        room.setQuantityParticipant(room.getQuantityParticipant()+1);
         roomRepository.save(room);
 
         return participantRepository.save(participant);
@@ -340,9 +345,7 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
-    }
+
 
 
 //    public List<Room> getAllParticipantRoom(Long participantId) {
