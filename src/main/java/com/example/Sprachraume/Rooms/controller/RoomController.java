@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -120,7 +121,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/extendTime")
-    public Room extendTime(@RequestParam Long roomId, @RequestBody LocalDateTime endTime) {
+    public Room extendTime(@RequestParam Long roomId, @RequestBody OffsetDateTime endTime) {
         return roomService.extendTime(roomId, endTime);
     }
 

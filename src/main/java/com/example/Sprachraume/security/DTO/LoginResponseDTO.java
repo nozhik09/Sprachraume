@@ -28,7 +28,7 @@ public class LoginResponseDTO {
 
     private LocalDate birthdayDate;
 
-    private String foto;
+    private String avatar;
 
     private Double rating;
 

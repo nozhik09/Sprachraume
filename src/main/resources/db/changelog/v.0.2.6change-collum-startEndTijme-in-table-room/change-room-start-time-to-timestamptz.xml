@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="change-room-start-time-to-timestamptz" author="admin">
+        <sql>
+            ALTER TABLE room
+            ALTER COLUMN start_time TYPE TIMESTAMP WITH TIME ZONE
+            USING start_time AT TIME ZONE 'UTC';
+
+            ALTER TABLE room
+            ALTER COLUMN end_time TYPE TIMESTAMP WITH TIME ZONE
+            USING end_time AT TIME ZONE 'UTC';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
