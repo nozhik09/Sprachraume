@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Data
@@ -31,9 +32,9 @@ public class Room {
     @Column(name = "topic")
     private String topic;
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private OffsetDateTime startTime;
     @Column(name = "end_Time")
-    private LocalDateTime endTime;
+    private OffsetDateTime  endTime;
 
     @Column(name = "duration")
     private Long duration;

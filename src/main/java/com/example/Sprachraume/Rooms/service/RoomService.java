@@ -18,10 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +63,9 @@ public class RoomService {
         if (userData.getRating() < 3D) {
             throw new UserHaveLowRatingException("You have low rating");
         }
+
         Room newRoom = new Room();
+        newRoom.setParticipants(new HashSet<>());
         newRoom.setCreator(userData);
         newRoom.setStatus(true);
         newRoom.setMinQuantity(4L);
@@ -79,6 +78,13 @@ public class RoomService {
         newRoom.setLanguageLvl(room.getLanguageLvl());
         newRoom.setPrivateRoom(room.getPrivateRoom());
         newRoom.setQuantityParticipant(1L);
+        roomRepository.save(newRoom);
+        Participant participant = new Participant();
+        participant.setUser(userData);
+        participant.setRoom(newRoom);
+        participant.setStatus(ParticipantStatus.CREATOR);
+        participant.setParticipantType(ParticipantType.CREATOR);
+        newRoom.getParticipants().add(participant);
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
         newRoom.setDuration(durationInMinutes);
 
@@ -87,11 +93,11 @@ public class RoomService {
         } else {
             newRoom.setMaxQuantity(room.getMaxQuantity());
         }
-        boolean isActive = room.getEndTime().isAfter(LocalDateTime.now());
+        boolean isActive = room.getEndTime().isAfter(OffsetDateTime.now());
         newRoom.setStatus(isActive);
-        newRoom.setParticipants(new HashSet<>());
         String dailyRoomUrl = dailyRoomService.createDailyRoom();
         newRoom.setRoomUrl(dailyRoomUrl);
+        participantRepository.save(participant);
         return roomRepository.save(newRoom);
     }
 
@@ -162,9 +168,6 @@ public class RoomService {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
 
-        if (participant.getStatus() != ParticipantStatus.PENDING) {
-            throw new InvitationAlreadyRespondedException("Invitation already responded to");
-        }
 
         participant.setStatus(ParticipantStatus.DECLINED);
         return participantRepository.save(participant);
@@ -178,6 +181,7 @@ public class RoomService {
 
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
 
         Optional<Participant> existingRequest = participantRepository.findByRoomAndUser(room, user);
         if (existingRequest.isPresent()) {
@@ -326,7 +330,7 @@ public class RoomService {
     }
 
 
-    public Room extendTime(Long roomId, LocalDateTime endTime) {
+    public Room extendTime(Long roomId, OffsetDateTime  endTime) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
 
         if (room.getStatus()) {

@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/room/id").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/allRoom").permitAll()
                         .requestMatchers(HttpMethod.PUT, "room/participant/invite/accept").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "room/participant/decline").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "room/participant/invite/decline").permitAll()
                         .requestMatchers(HttpMethod.POST, "room/participant/invite/sendInvitation").permitAll()
                         .requestMatchers(HttpMethod.GET, "room/participant/invite/getAccept").permitAll()
                         .requestMatchers(HttpMethod.GET, "room/participant/invite/getPending").permitAll()
