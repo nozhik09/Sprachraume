@@ -14,11 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -153,6 +155,20 @@ public class UserController {
     @GetMapping("/avatar/{userId}")
     public ResponseEntity<Resource> getAvatar(@PathVariable Long userId) throws IOException {
         return userService.getAvatarByUserId(userId);
+    }
+
+    @GetMapping("/file/avatar/{fileName:.+}")
+    public ResponseEntity<Resource> getAvatarByName(@PathVariable String fileName) throws IOException {
+        Resource resource = userService.loadAvatarResource(fileName);
+
+        String contentType = Files.probeContentType(resource.getFile().toPath());
+        MediaType mediaType = contentType != null
+                ? MediaType.parseMediaType(contentType)
+                : MediaType.APPLICATION_OCTET_STREAM;
+
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(resource);
     }
 
 }

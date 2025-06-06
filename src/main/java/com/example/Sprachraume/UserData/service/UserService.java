@@ -28,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -235,7 +236,7 @@ public class UserService implements UserDetailsService {
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String avatarUrl = "/api/user/avatar/" + filename;
+            String avatarUrl = "/api/users/avatar/" + filename;
             user.setAvatar(avatarUrl);
             userRepository.save(user);
 
@@ -269,6 +270,18 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .body(resource);
+    }
+
+
+    public Resource loadAvatarResource(String fileName) throws IOException {
+        Path filePath = Paths.get("uploads/avatars").resolve(fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new FileNotFoundException("Avatar not found: " + fileName);
+        }
+
+        return resource;
     }
 
 

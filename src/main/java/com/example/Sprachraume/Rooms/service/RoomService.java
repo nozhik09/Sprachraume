@@ -82,7 +82,7 @@ public class RoomService {
         Participant participant = new Participant();
         participant.setUser(userData);
         participant.setRoom(newRoom);
-        participant.setStatus(ParticipantStatus.CREATOR);
+        participant.setStatus(ParticipantStatus.ACCEPTED);
         participant.setParticipantType(ParticipantType.CREATOR);
         newRoom.getParticipants().add(participant);
         long durationInMinutes = Duration.between(room.getStartTime(), room.getEndTime()).toMinutes();
