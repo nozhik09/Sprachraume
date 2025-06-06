@@ -23,5 +23,4 @@ public class CreateNewRoomDTORequest {
     private Boolean privateRoom;
     private Long minQuantity;
     private Long maxQuantity;
-    private Long quantityParticipant;
 }
