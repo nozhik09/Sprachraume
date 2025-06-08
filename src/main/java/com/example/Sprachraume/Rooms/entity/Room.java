@@ -64,6 +64,8 @@ public class Room {
     @Column(name = "max_quantity")
     private Long maxQuantity;
 
+
+// TODO Добавить полк присутсввие онлайн на стр
     @Column(name = "room_url")
     private String roomUrl;
 
