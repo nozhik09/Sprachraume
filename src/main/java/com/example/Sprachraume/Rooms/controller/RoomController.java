@@ -50,7 +50,6 @@ public class RoomController {
         return roomService.requestToJoinRoom(userId, roomId);
     }
 
-
     @Operation(summary = "Accept invitation to a room", description = "User accepts an invitation to a specific room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invitation successfully accepted", content = @Content(mediaType = "application/json")),
