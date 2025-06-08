@@ -82,11 +82,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable);
 //                .oauth2Login(oauth2 -> oauth2
 //                        .loginPage("/login/google")
 //                        .defaultSuccessUrl("/home", true))
-                .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+//                .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
