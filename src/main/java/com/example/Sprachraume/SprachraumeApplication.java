@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SprachraumeApplication {
 
 	public static void main(String[] args) {
+		System.out.println(">>>>> Starting Sprachraume...");
 		SpringApplication.run(SprachraumeApplication.class, args);
 	}
 

@@ -36,7 +36,7 @@ public class RoomService {
 
 
     public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
-        if (room.getMaxQuantity()==null){
+        if (room.getMaxQuantity() == null) {
             throw new NullOrEmptyException("Max Quantity mast be not null");
         }
         if (room.getTopic() == null || room.getTopic().isEmpty()) {
@@ -157,7 +157,7 @@ public class RoomService {
 
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
-        room.setQuantityParticipant(room.getQuantityParticipant()+1);
+        room.setQuantityParticipant(room.getQuantityParticipant() + 1);
         roomRepository.save(room);
 
         return participantRepository.save(participant);
@@ -244,6 +244,8 @@ public class RoomService {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new UserNotFoundException("Request not found"));
 
+        Room room = roomRepository.findRoomByParticipants(participant);
+        room.setQuantityParticipant(room.getQuantityParticipant()+1L);
         participant.setStatus(ParticipantStatus.ACCEPTED);
         return participantRepository.save(participant);
     }
@@ -302,7 +304,7 @@ public class RoomService {
     }
 
 
-    public List<Room> filterRooms(String language, Boolean status, Long minAge,String category) {
+    public List<Room> filterRooms(String language, Boolean status, Long minAge, String category) {
         Specification<Room> spec = Specification.where(null);
 
         if (language != null && !language.isEmpty()) {
@@ -329,8 +331,10 @@ public class RoomService {
         return roomRepository.findAll(spec);
     }
 
+//    TODO Метод отобразить ВСЕ уведомления по Юзеру
 
-    public Room extendTime(Long roomId, OffsetDateTime  endTime) {
+
+    public Room extendTime(Long roomId, OffsetDateTime endTime) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
 
         if (room.getStatus()) {
@@ -348,8 +352,6 @@ public class RoomService {
     public List<Room> getAllRoom() {
         return roomRepository.findAll();
     }
-
-
 
 
 //    public List<Room> getAllParticipantRoom(Long participantId) {
