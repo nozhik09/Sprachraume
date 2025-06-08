@@ -10,7 +10,12 @@ public class SprachraumeApplication {
 
 	public static void main(String[] args) {
 		System.out.println(">>>>> Starting Sprachraume...");
-		SpringApplication.run(SprachraumeApplication.class, args);
+		try {
+			SpringApplication.run(SprachraumeApplication.class, args);
+		} catch (Exception e) {
+			System.err.println("❌ Ошибка запуска приложения: " + e.getMessage());
+			e.printStackTrace();
+		}
 		System.out.println("!!!!!!!!!!!!!!!END");
 	}
 
