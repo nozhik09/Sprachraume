@@ -4,6 +4,9 @@ package com.example.Sprachraume.Rooms.controller;
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
+import com.example.Sprachraume.Rooms.entity.DTO.OnlineUsersResponseDTO;
+import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
+import com.example.Sprachraume.Rooms.entity.DTO.RoomParticipationDTO;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,7 +38,7 @@ public class RoomController {
             @ApiResponse(responseCode = "409", description = "Max participant limit exceeded", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping
-    public Room createNewRoom(@RequestParam Long userId, @RequestBody CreateNewRoomDTORequest room) {
+    public RoomFullDTO createNewRoom(@RequestParam Long userId, @RequestBody CreateNewRoomDTORequest room) {
         return roomService.createdNewRoom(userId, room);
     }
 
@@ -204,6 +208,22 @@ public class RoomController {
             @RequestParam(required = false) String category
     ) {
         return roomService.filterRooms(language, status, minAge,category);
+    }
+
+
+    @PostMapping("/online")
+    public ResponseEntity<OnlineUsersResponseDTO> plusOnline(@RequestParam Long userId, @RequestParam Long roomId) {
+        return ResponseEntity.ok(roomService.plusOnline(userId, roomId));
+    }
+
+    @DeleteMapping("/online")
+    public ResponseEntity<OnlineUsersResponseDTO> minusOnline(@RequestParam Long userId, @RequestParam Long roomId) {
+        return ResponseEntity.ok(roomService.minusOnline(userId, roomId));
+    }
+
+    @GetMapping("/roomStatus")
+    public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
+        return roomService.getAllRoomByUser(userId);
     }
 
 

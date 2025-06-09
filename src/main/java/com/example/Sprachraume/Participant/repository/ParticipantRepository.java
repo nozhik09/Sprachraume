@@ -19,4 +19,7 @@ public interface ParticipantRepository extends JpaRepository<Participant,Long> {
     List<Participant> findAllByUserAndStatus(UserData user, ParticipantStatus status);
 
     List<Participant> findAllByUserAndParticipantTypeAndStatus(UserData user, ParticipantType participantType, ParticipantStatus participantStatus);
+    List<Participant> findByUserId(Long userId);
+
+    List<Participant> findByUserIdAndStatus(Long id, ParticipantStatus participantStatus);
 }

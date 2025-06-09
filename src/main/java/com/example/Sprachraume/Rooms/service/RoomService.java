@@ -6,22 +6,23 @@ import com.example.Sprachraume.Category.CategoryRepository;
 import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
 import com.example.Sprachraume.Participant.entity.Participant;
+import com.example.Sprachraume.Participant.entity.ParticipantDTO;
 import com.example.Sprachraume.Participant.entity.ParticipantStatus;
 import com.example.Sprachraume.Participant.entity.ParticipantType;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
-import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
+import com.example.Sprachraume.Rooms.entity.DTO.*;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.rmi.AlreadyBoundException;
 import java.time.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -30,12 +31,13 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final ParticipantRepository participantRepository;
+    private final ModelMapper modelMapper;
 
     private final DailyRoomService dailyRoomService;
     private final CategoryRepository categoryRepository;
 
 
-    public Room createdNewRoom(Long id, CreateNewRoomDTORequest room) {
+    public RoomFullDTO createdNewRoom(Long id, CreateNewRoomDTORequest room) {
         if (room.getMaxQuantity() == null) {
             throw new NullOrEmptyException("Max Quantity mast be not null");
         }
@@ -63,7 +65,6 @@ public class RoomService {
         if (userData.getRating() < 3D) {
             throw new UserHaveLowRatingException("You have low rating");
         }
-
         Room newRoom = new Room();
         newRoom.setParticipants(new HashSet<>());
         newRoom.setCreator(userData);
@@ -98,7 +99,8 @@ public class RoomService {
         String dailyRoomUrl = dailyRoomService.createDailyRoom();
         newRoom.setRoomUrl(dailyRoomUrl);
         participantRepository.save(participant);
-        return roomRepository.save(newRoom);
+        Room savedRoom = roomRepository.save(newRoom);
+        return mapRoomToFullDTO(savedRoom);
     }
 
     // админ комнаты приглашает юзера
@@ -153,8 +155,25 @@ public class RoomService {
         if (participant.getStatus() != ParticipantStatus.PENDING) {
             throw new InvitationAlreadyRespondedException("Invitation already responded to");
         }
-        //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
-
+//        // Получаем пользователя
+//        UserData user = participant.getUser();
+//
+//        // Получаем все принятые встречи пользователя
+//        List<Participant> acceptedMeetings = participantRepository
+//                .findByUserIdAndStatus(user.getId(), ParticipantStatus.ACCEPTED);
+//
+//        // Проверка на пересечение по времени
+//        for (Participant p : acceptedMeetings) {
+//            Room existingRoom = p.getRoom();
+//
+//            boolean overlap = !(room.getEndTime().isBefore(existingRoom.getStartTime())
+//                    || room.getStartTime().isAfter(existingRoom.getEndTime()));
+//
+//            if (overlap) {
+//                throw new AlreadyUsedException("У вас уже назначена встреча на это время: " +
+//                        existingRoom.getStartTime() + " — " + existingRoom.getEndTime());
+//            }
+//        }
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
         room.setQuantityParticipant(room.getQuantityParticipant() + 1);
@@ -187,7 +206,8 @@ public class RoomService {
         if (existingRequest.isPresent()) {
             throw new AlreadyUsedException("You have already requested to join this room or are already a participant");
         }
-        //TODO сделать экзепшин что если на это время уже назанична встреча то он не может принять
+
+
         Participant participant = new Participant();
         participant.setRoom(room);
         participant.setUser(user);
@@ -245,7 +265,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("Request not found"));
 
         Room room = roomRepository.findRoomByParticipants(participant);
-        room.setQuantityParticipant(room.getQuantityParticipant()+1L);
+        room.setQuantityParticipant(room.getQuantityParticipant() + 1L);
         participant.setStatus(ParticipantStatus.ACCEPTED);
         return participantRepository.save(participant);
     }
@@ -331,7 +351,77 @@ public class RoomService {
         return roomRepository.findAll(spec);
     }
 
-//    TODO Метод отобразить ВСЕ уведомления по Юзеру
+
+    public OnlineUsersResponseDTO plusOnline(Long userId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+        UserData userData = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (room.getRoomOnlineUsers().contains(userData)) {
+            throw new AlreadyUsedException("Пользователь уже онлайн в комнате");
+        }
+
+        int userAge = calculateAge(userData.getBirthdayDate(), LocalDate.now());
+
+        if (room.getAge() != null && userAge < room.getAge()) {
+            throw new UserTooYoungException("You are not going through the age");
+        }
+        Participant participant = new Participant();
+        participant.setRoom(room);
+        participant.setUser(userData);
+        participant.setStatus(ParticipantStatus.VIEWED);
+        participant.setParticipantType(ParticipantType.VISITED_WITHOUT_AN_INVITATION);
+        participantRepository.save(participant);
+        room.getRoomOnlineUsers().add(userData);
+        roomRepository.save(room);
+        List<OnlineUserDTO> onlineUserDTOs = room.getRoomOnlineUsers().stream()
+                .map(u -> new OnlineUserDTO(u.getId(), u.getUsername(), u.getAvatar()))
+                .toList();
+
+        return new OnlineUsersResponseDTO(onlineUserDTOs, onlineUserDTOs.size());
+    }
+
+
+    public OnlineUsersResponseDTO minusOnline(Long userId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+        UserData userData = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        room.getRoomOnlineUsers().remove(userData);
+        roomRepository.save(room);
+
+        List<OnlineUserDTO> onlineUserDTOs = room.getRoomOnlineUsers().stream()
+                .map(u -> new OnlineUserDTO(u.getId(), u.getUsername(), u.getAvatar()))
+                .toList();
+
+        return new OnlineUsersResponseDTO(onlineUserDTOs, onlineUserDTOs.size());
+    }
+
+    public List<RoomParticipationDTO> getAllRoomByUser(Long userId) {
+        List<Participant> participants = participantRepository.findByUserId(userId);
+
+        return participants.stream()
+                .map(p -> {
+                    Room room = p.getRoom();
+                    RoomShortDTO dto = new RoomShortDTO(
+                            room.getId(),
+                            room.getTopic(),
+                            room.getStartTime(),
+                            room.getEndTime(),
+                            room.getDuration(),
+                            room.getCategory().getName(),
+                            room.getLanguageLvl(),
+                            room.getQuantityParticipant(),
+                            room.getStatus(),
+                            room.getAge(),
+                            room.getLanguage()
+                    );
+                    return new RoomParticipationDTO(dto, p.getStatus(), p.getParticipantType());
+                })
+                .toList();
+    }
 
 
     public Room extendTime(Long roomId, OffsetDateTime endTime) {
@@ -341,7 +431,6 @@ public class RoomService {
             room.setEndTime(endTime);
         }
         return room;
-
     }
 
 
@@ -365,6 +454,38 @@ public class RoomService {
         } else {
             return 0;
         }
+    }
+
+
+    public RoomFullDTO mapRoomToFullDTO(Room room) {
+        List<ParticipantDTO> participantDTOs = room.getParticipants().stream()
+                .map(p -> new ParticipantDTO(
+                        p.getUser().getId(),
+                        p.getUser().getUsername(),
+                        p.getStatus(),
+                        p.getParticipantType()
+                ))
+                .toList();
+
+        return new RoomFullDTO(
+                room.getId(),
+                room.getTopic(),
+                room.getStartTime(),
+                room.getEndTime(),
+                room.getDuration(),
+                room.getLanguage(),
+                room.getLanguageLvl(),
+                room.getAge(),
+                room.getPrivateRoom(),
+                room.getMinQuantity(),
+                room.getMaxQuantity(),
+                room.getQuantityParticipant(),
+                room.getStatus(),
+                room.getRoomUrl(),
+                room.getCategory().getName(),
+                room.getCreator().getUsername(),
+                participantDTOs
+        );
     }
 
 
