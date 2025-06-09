@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/language/deleteNative").permitAll()
                         .requestMatchers(HttpMethod.POST, "/category/add").permitAll()
                         .requestMatchers(HttpMethod.GET, "/category/allCategory").permitAll()
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/api", "/actuator/health", "/health", "/favicon.ico").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable);
