@@ -30,4 +30,7 @@
     <include file="v.0.2.4add-collum-to-table-room-quantityParticipant/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.5rename-collum-quantityParticipant-in-table-room/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.6change-collum-startEndTijme-in-table-room/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.7add-colum-online/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.8add-many-to-many-online-users/changelog.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -82,7 +82,6 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         return learningLanguage;
     }
 
-    // TODO сделать уровень владения языком ENUM или выпадающим списком
 
     public List<Languages> getAllLanguage() {
         return languagesRepository.findAll();

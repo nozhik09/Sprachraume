@@ -65,7 +65,15 @@ public class Room {
     private Long maxQuantity;
 
 
-// TODO Добавить полк присутсввие онлайн на стр
+    @ManyToMany
+    @JoinTable(
+            name = "room_online_users",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<UserData> roomOnlineUsers;
+
+
     @Column(name = "room_url")
     private String roomUrl;
 
