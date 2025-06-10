@@ -457,7 +457,6 @@ public class RoomService {
                         p.getParticipantType()
                 ))
                 .toList();
-
        CreatorRoomDto creatorRoomDto = modelMapper.map(room.getCreator(),CreatorRoomDto.class);
 
         return new RoomFullDTO(
