@@ -72,6 +72,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/room/online").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/room/online").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/roomStatus").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/room/adminRoom/allRoom").permitAll()
                         .requestMatchers(HttpMethod.POST, "/language/addNativeLanguage").permitAll()
                         .requestMatchers(HttpMethod.GET, "/language").permitAll()
                         .requestMatchers(HttpMethod.GET, "/language/nativeLanguage").permitAll()
