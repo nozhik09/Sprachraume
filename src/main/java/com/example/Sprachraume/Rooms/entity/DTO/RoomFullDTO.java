@@ -29,6 +29,6 @@ public class RoomFullDTO {
     private Boolean status;
     private String roomUrl;
     private String categoryName;
-    private CreatorRoomDto creatorName;
+    private CreatorRoomDto creator;
     private List<ParticipantDTO> participants;
 }
