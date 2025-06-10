@@ -367,12 +367,7 @@ public class RoomService {
         if (room.getAge() != null && userAge < room.getAge()) {
             throw new UserTooYoungException("You are not going through the age");
         }
-        Participant participant = new Participant();
-        participant.setRoom(room);
-        participant.setUser(userData);
-        participant.setStatus(ParticipantStatus.VIEWED);
-        participant.setParticipantType(ParticipantType.VISITED_WITHOUT_AN_INVITATION);
-        participantRepository.save(participant);
+
         room.getRoomOnlineUsers().add(userData);
         roomRepository.save(room);
         List<OnlineUserDTO> onlineUserDTOs = room.getRoomOnlineUsers().stream()
@@ -467,6 +462,8 @@ public class RoomService {
                 ))
                 .toList();
 
+       CreatorRoomDto creatorRoomDto = modelMapper.map(room.getCreator(),CreatorRoomDto.class);
+
         return new RoomFullDTO(
                 room.getId(),
                 room.getTopic(),
@@ -483,7 +480,7 @@ public class RoomService {
                 room.getStatus(),
                 room.getRoomUrl(),
                 room.getCategory().getName(),
-                room.getCreator().getUsername(),
+                creatorRoomDto,
                 participantDTOs
         );
     }

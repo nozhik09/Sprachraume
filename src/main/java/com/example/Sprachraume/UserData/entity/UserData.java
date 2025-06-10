@@ -55,9 +55,6 @@
         @Column(name = "avatar")
         private String avatar;
 
-        //TODO Переименовать на автар
-
-        //TODO Сделвть что бы фото сохранялось на сервер
 
         @Column(name = "rating")
         private Double rating;
