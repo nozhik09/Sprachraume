@@ -21,4 +21,6 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
     List<Room> findByStatusTrue();
 
     Room findRoomByParticipants(Participant participant);
+
+    List<Room> findRoomsByCreator(UserData userData);
 }

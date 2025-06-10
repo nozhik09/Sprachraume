@@ -108,15 +108,7 @@ public class RoomController {
     }
 
 
-    @Operation(summary = "Get a room by ID", description = "Retrieve a specific room by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Room retrieved", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
-    })
-    @GetMapping("/id")
-    public Room getRoom(@RequestParam Long roomId) {
-        return roomService.getRoom(roomId);
-    }
+
 
     @Operation(summary = "Extend room end time", description = "Продлить время окончания определенной комнаты")
     @ApiResponses(value = {
@@ -191,6 +183,11 @@ public class RoomController {
         return roomService.declineRequestByAdmin(participantId);
     }
 
+    @GetMapping("/adminRoom/allRoom")
+    public List<Room> findAllRoomByCreator(@RequestParam Long userId){
+        return roomService.findAllRoomsByCreator(userId);
+    }
+
     @Operation(summary = "Все созданыекомнаты", description = "Получить список всех доступных комнат")
     @GetMapping("/allRoom")
     public List<Room> getAllRoom() {
@@ -224,6 +221,18 @@ public class RoomController {
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
+    }
+
+
+
+    @Operation(summary = "Get a room by ID", description = "Retrieve a specific room by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Room retrieved", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
+    })
+    @GetMapping("/id")
+    public Room getRoom(@RequestParam Long roomId) {
+        return roomService.getRoom(roomId);
     }
 
 

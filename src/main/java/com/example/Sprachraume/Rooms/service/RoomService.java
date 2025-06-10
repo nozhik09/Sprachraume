@@ -20,7 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.rmi.AlreadyBoundException;
 import java.time.*;
 import java.util.*;
 
@@ -71,7 +70,13 @@ public class RoomService {
         newRoom.setStatus(true);
         newRoom.setMinQuantity(4L);
         newRoom.setTopic(room.getTopic());
-        newRoom.setAge(room.getAge());
+
+        if (room.getAge()==null){
+            newRoom.setAge(0L);
+        }else {
+            newRoom.setAge(room.getAge());
+        }
+
         newRoom.setLanguage(room.getLanguage());
         newRoom.setStartTime(room.getStartTime());
         newRoom.setEndTime(room.getEndTime());
@@ -155,25 +160,6 @@ public class RoomService {
         if (participant.getStatus() != ParticipantStatus.PENDING) {
             throw new InvitationAlreadyRespondedException("Invitation already responded to");
         }
-//        // Получаем пользователя
-//        UserData user = participant.getUser();
-//
-//        // Получаем все принятые встречи пользователя
-//        List<Participant> acceptedMeetings = participantRepository
-//                .findByUserIdAndStatus(user.getId(), ParticipantStatus.ACCEPTED);
-//
-//        // Проверка на пересечение по времени
-//        for (Participant p : acceptedMeetings) {
-//            Room existingRoom = p.getRoom();
-//
-//            boolean overlap = !(room.getEndTime().isBefore(existingRoom.getStartTime())
-//                    || room.getStartTime().isAfter(existingRoom.getEndTime()));
-//
-//            if (overlap) {
-//                throw new AlreadyUsedException("У вас уже назначена встреча на это время: " +
-//                        existingRoom.getStartTime() + " — " + existingRoom.getEndTime());
-//            }
-//        }
         participant.setStatus(ParticipantStatus.ACCEPTED);
         room.getParticipants().add(participant);
         room.setQuantityParticipant(room.getQuantityParticipant() + 1);
@@ -201,6 +187,10 @@ public class RoomService {
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        if (calculateAge(user.getBirthdayDate(),LocalDate.now())<room.getAge()){
+            throw new UserTooYoungException("Вы не прошли проверку на возраст");
+
+        }
 
         Optional<Participant> existingRequest = participantRepository.findByRoomAndUser(room, user);
         if (existingRequest.isPresent()) {
@@ -435,6 +425,12 @@ public class RoomService {
 
     public List<Room> getAllRoom() {
         return roomRepository.findAll();
+    }
+
+    public List<Room> findAllRoomsByCreator(Long userId){
+        UserData userData = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return roomRepository.findRoomsByCreator(userData);
     }
 
 
