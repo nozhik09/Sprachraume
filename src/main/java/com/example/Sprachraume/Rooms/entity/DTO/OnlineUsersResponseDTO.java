@@ -15,6 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class OnlineUsersResponseDTO {
     private List<OnlineUserDTO> users;
-    private int count;
+    private Long count;
 
 }

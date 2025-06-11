@@ -32,5 +32,7 @@
     <include file="v.0.2.6change-collum-startEndTijme-in-table-room/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.7add-colum-online/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.8add-many-to-many-online-users/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.2.9add-count-to-table-room/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.3.0add-defaultValue-to-collum-count/changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

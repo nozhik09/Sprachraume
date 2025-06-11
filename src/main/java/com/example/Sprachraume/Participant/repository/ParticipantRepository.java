@@ -22,4 +22,6 @@ public interface ParticipantRepository extends JpaRepository<Participant,Long> {
     List<Participant> findByUserId(Long userId);
 
     List<Participant> findByUserIdAndStatus(Long id, ParticipantStatus participantStatus);
+    List<Participant> findAllParticipantByRoom(Room room);
+
 }

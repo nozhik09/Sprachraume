@@ -5,10 +5,13 @@ import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.UserData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room> {
@@ -23,4 +26,8 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
     Room findRoomByParticipants(Participant participant);
 
     List<Room> findRoomsByCreator(UserData userData);
+
+
+    @Query("SELECT r FROM Room r LEFT JOIN FETCH r.roomOnlineUsers WHERE r.id = :roomId")
+    Optional<Room> findRoomWithOnlineUsers(@Param("roomId") Long roomId);
 }
