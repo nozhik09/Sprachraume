@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v.0.2.9add-count-to-table-room" author="vladn09">
+        <addColumn tableName="room">
+            <column name="count_online_users" type="bigint"/>
+        </addColumn>
+
+    </changeSet>
+</databaseChangeLog>

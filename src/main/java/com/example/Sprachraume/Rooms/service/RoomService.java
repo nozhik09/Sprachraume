@@ -17,9 +17,11 @@ import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.time.*;
 import java.util.*;
 
@@ -71,12 +73,11 @@ public class RoomService {
         newRoom.setMinQuantity(4L);
         newRoom.setTopic(room.getTopic());
 
-        if (room.getAge()==null){
+        if (room.getAge() == null) {
             newRoom.setAge(0L);
-        }else {
+        } else {
             newRoom.setAge(room.getAge());
         }
-
         newRoom.setLanguage(room.getLanguage());
         newRoom.setStartTime(room.getStartTime());
         newRoom.setEndTime(room.getEndTime());
@@ -187,7 +188,7 @@ public class RoomService {
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (calculateAge(user.getBirthdayDate(),LocalDate.now())<room.getAge()){
+        if (calculateAge(user.getBirthdayDate(), LocalDate.now()) < room.getAge()) {
             throw new UserTooYoungException("Вы не прошли проверку на возраст");
 
         }
@@ -343,28 +344,33 @@ public class RoomService {
 
 
     public OnlineUsersResponseDTO plusOnline(Long userId, Long roomId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findRoomWithOnlineUsers(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (room.getRoomOnlineUsers().contains(userData)) {
-            throw new AlreadyUsedException("Пользователь уже онлайн в комнате");
-        }
-
         int userAge = calculateAge(userData.getBirthdayDate(), LocalDate.now());
 
-        if (room.getAge() != null && userAge < room.getAge()) {
-            throw new UserTooYoungException("You are not going through the age");
+        if (userData.getBirthdayDate()==null && room.getAge()!=0){
+            throw new NullOrEmptyException("Вам нужно указать свой возраст");
         }
 
-        room.getRoomOnlineUsers().add(userData);
-        roomRepository.save(room);
-        List<OnlineUserDTO> onlineUserDTOs = room.getRoomOnlineUsers().stream()
-                .map(u -> new OnlineUserDTO(u.getId(), u.getUsername(), u.getAvatar()))
-                .toList();
+        if (room.getAge() != null && userAge < room.getAge()) {
+            throw new UserTooYoungException("Вы не прошли проверку на возраст");
+        }
 
-        return new OnlineUsersResponseDTO(onlineUserDTOs, onlineUserDTOs.size());
+
+        if (!room.getRoomOnlineUsers().contains(userData)) {
+            room.getRoomOnlineUsers().add(userData);
+            room.setCountOnlineUser(room.getCountOnlineUser()+1L);
+            room.setCountOnlineUser((long) room.getRoomOnlineUsers().size());
+
+            roomRepository.save(room);
+        }
+        List<UserData> list = room.getRoomOnlineUsers().stream().toList();
+        Type listType = new TypeToken<List<OnlineUserDTO>>() {}.getType();
+        List<OnlineUserDTO> onlineUserDTOs = modelMapper.map(list, listType);
+        return new OnlineUsersResponseDTO(onlineUserDTOs, room.getCountOnlineUser());
     }
 
 
@@ -375,14 +381,17 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         room.getRoomOnlineUsers().remove(userData);
+        room.setCountOnlineUser(room.getCountOnlineUser()-1L);
         roomRepository.save(room);
 
-        List<OnlineUserDTO> onlineUserDTOs = room.getRoomOnlineUsers().stream()
-                .map(u -> new OnlineUserDTO(u.getId(), u.getUsername(), u.getAvatar()))
-                .toList();
+        List<UserData> list = room.getRoomOnlineUsers().stream().toList();
+        Type listType = new TypeToken<List<OnlineUserDTO>>() {}.getType();
+        List<OnlineUserDTO> onlineUserDTOs = modelMapper.map(list, listType);
 
-        return new OnlineUsersResponseDTO(onlineUserDTOs, onlineUserDTOs.size());
+        return new OnlineUsersResponseDTO(onlineUserDTOs, room.getCountOnlineUser());
     }
+
+
 
     public List<RoomParticipationDTO> getAllRoomByUser(Long userId) {
         List<Participant> participants = participantRepository.findByUserId(userId);
@@ -427,7 +436,7 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public List<Room> findAllRoomsByCreator(Long userId){
+    public List<Room> findAllRoomsByCreator(Long userId) {
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return roomRepository.findRoomsByCreator(userData);
@@ -457,7 +466,7 @@ public class RoomService {
                         p.getParticipantType()
                 ))
                 .toList();
-       CreatorRoomDto creatorRoomDto = modelMapper.map(room.getCreator(),CreatorRoomDto.class);
+        CreatorRoomDto creatorRoomDto = modelMapper.map(room.getCreator(), CreatorRoomDto.class);
 
         return new RoomFullDTO(
                 room.getId(),

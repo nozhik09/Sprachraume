@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -71,7 +72,10 @@ public class Room {
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<UserData> roomOnlineUsers;
+    private Set<UserData> roomOnlineUsers=new HashSet<>();
+
+    @Column(name = "count_online_users")
+    private Long countOnlineUser;
 
 
     @Column(name = "room_url")

@@ -218,6 +218,8 @@ public class RoomController {
         return ResponseEntity.ok(roomService.minusOnline(userId, roomId));
     }
 
+
+    @Operation(summary = "показать все комнаты в которых участвовал пользователь")
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
