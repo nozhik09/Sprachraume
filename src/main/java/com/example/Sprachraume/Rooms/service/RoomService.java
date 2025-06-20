@@ -85,6 +85,7 @@ public class RoomService {
         newRoom.setLanguageLvl(room.getLanguageLvl());
         newRoom.setPrivateRoom(room.getPrivateRoom());
         newRoom.setQuantityParticipant(1L);
+        newRoom.setCountOnlineUser(0L);
         roomRepository.save(newRoom);
         Participant participant = new Participant();
         participant.setUser(userData);
@@ -348,6 +349,9 @@ public class RoomService {
                 .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (userData.getBirthdayDate()==null && room.getAge()!=0){
+            throw new NullOrEmptyException("Вам нужно указать свой возраст");
+        }
 
         int userAge = calculateAge(userData.getBirthdayDate(), LocalDate.now());
 
@@ -359,14 +363,12 @@ public class RoomService {
             throw new UserTooYoungException("Вы не прошли проверку на возраст");
         }
 
-
         if (!room.getRoomOnlineUsers().contains(userData)) {
             room.getRoomOnlineUsers().add(userData);
-            room.setCountOnlineUser(room.getCountOnlineUser()+1L);
             room.setCountOnlineUser((long) room.getRoomOnlineUsers().size());
-
             roomRepository.save(room);
         }
+
         List<UserData> list = room.getRoomOnlineUsers().stream().toList();
         Type listType = new TypeToken<List<OnlineUserDTO>>() {}.getType();
         List<OnlineUserDTO> onlineUserDTOs = modelMapper.map(list, listType);
@@ -375,14 +377,15 @@ public class RoomService {
 
 
     public OnlineUsersResponseDTO minusOnline(Long userId, Long roomId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findRoomWithOnlineUsers(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        room.getRoomOnlineUsers().remove(userData);
-        room.setCountOnlineUser(room.getCountOnlineUser()-1L);
-        roomRepository.save(room);
+        if (room.getRoomOnlineUsers().remove(userData)) {
+            room.setCountOnlineUser((long) room.getRoomOnlineUsers().size());
+            roomRepository.save(room);
+        }
 
         List<UserData> list = room.getRoomOnlineUsers().stream().toList();
         Type listType = new TypeToken<List<OnlineUserDTO>>() {}.getType();
