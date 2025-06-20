@@ -208,10 +208,12 @@ public class RoomController {
     }
 
 
+
     @PostMapping("/online")
     public ResponseEntity<OnlineUsersResponseDTO> plusOnline(@RequestParam Long userId, @RequestParam Long roomId) {
         return ResponseEntity.ok(roomService.plusOnline(userId, roomId));
     }
+
 
     @DeleteMapping("/online")
     public ResponseEntity<OnlineUsersResponseDTO> minusOnline(@RequestParam Long userId, @RequestParam Long roomId) {
@@ -219,11 +221,15 @@ public class RoomController {
     }
 
 
+
+
     @Operation(summary = "показать все комнаты в которых участвовал пользователь")
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
     }
+
+
 
 
 
