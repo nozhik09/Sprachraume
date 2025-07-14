@@ -2,6 +2,7 @@ package com.example.Sprachraume.UserData.controller;
 
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
+import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
@@ -46,14 +47,14 @@ public class UserController {
                     schema = @Schema(implementation = ApiExceptionHanding.class)))})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public UserData createUser(@RequestBody UserRequestDto requestDto) {
+    public UserFullResponseDto createUser(@RequestBody UserRequestDto requestDto) {
         return userService.registerNewUser(requestDto);
     }
 
 
     @Operation(summary = "Get All Users", description = "Available to Admin")
     @GetMapping
-    public List<UserData> getAllUsers() {
+    public List<UserFullResponseDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -65,7 +66,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "User not Found", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class)))})
     @GetMapping("/{id}")
-    public UserData getUserById(@PathVariable(name = "id") Long id) {
+    public UserFullResponseDto getUserById(@PathVariable(name = "id") Long id) {
         return userService.gitUserById(id);
     }
 
@@ -79,23 +80,23 @@ public class UserController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/update")
-    public UserData updateUser(@RequestBody UserUpdateRequestDto requestDto) {
+    public UserFullResponseDto updateUser(@RequestBody UserUpdateRequestDto requestDto) {
         return userService.updateUser(requestDto);
     }
 
     @PutMapping("/block")
-    public UserData blockUser(@RequestParam Long admin, @RequestParam Long user) {
+    public UserFullResponseDto blockUser(@RequestParam Long admin, @RequestParam Long user) {
         return userService.blockUser(admin, user);
 
     }
 
     @PutMapping("/unlock")
-    public UserData unlockUser(@RequestParam Long admin, @RequestParam Long user) {
+    public UserFullResponseDto unlockUser(@RequestParam Long admin, @RequestParam Long user) {
         return userService.unlockUser(admin, user);
     }
 
     @PutMapping("/setAdmin")
-    public UserData appointAnAdministrator(@RequestParam Long admin, @RequestParam Long user) {
+    public UserFullResponseDto appointAnAdministrator(@RequestParam Long admin, @RequestParam Long user) {
         return userService.appointAnAdministrator(admin, user);
     }
 
@@ -106,22 +107,22 @@ public class UserController {
 
 
     @GetMapping("/blockingUsers")
-    public List<UserData> getAllBlockUsers(@RequestParam Boolean status) {
+    public List<UserFullResponseDto> getAllBlockUsers(@RequestParam Boolean status) {
         return userService.getAllBlockUsers(status);
     }
 
     @GetMapping("/ratingBetween")
-    public List<UserData> getUserByRatingBetween(@RequestParam Double rating) {
+    public List<UserFullResponseDto> getUserByRatingBetween(@RequestParam Double rating) {
         return userService.getUsersByRatingBetween(rating);
     }
 
     @GetMapping("/rating")
-    public List<UserData> getUserByRating(@RequestParam Double rating) {
+    public List<UserFullResponseDto> getUserByRating(@RequestParam Double rating) {
         return userService.getUsersByRating(rating);
     }
 
     @GetMapping("/findAnyUsers")
-    public List<UserData> searchUsers(@RequestParam String keyword) {
+    public List<UserFullResponseDto> searchUsers(@RequestParam String keyword) {
         return userService.searchUsers(keyword);
     }
 

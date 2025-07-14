@@ -6,17 +6,20 @@ import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.Languages.repository.NativeLanguagesRepository;
+import com.example.Sprachraume.Mapping.Mapper;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
 import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Role.repository.RoleRepository;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.repository.RoomRepository;
+import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -38,6 +41,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +54,9 @@ public class UserService implements UserDetailsService {
     private final ParticipantRepository participantRepository;
     private final NativeLanguagesRepository nativeLanguagesRepository;
     private final LearningLanguageRepository learningLanguageRepository;
+private final ModelMapper modelMapper;
 
-
-    public UserData registerNewUser(UserRequestDto requestDto) {
+    public UserFullResponseDto registerNewUser(UserRequestDto requestDto) {
         if (requestDto == null) {
             throw new IllegalArgumentException("Request cannot be empty");
         }
@@ -86,19 +90,21 @@ public class UserService implements UserDetailsService {
         }
         userData.setRoles(Collections.singleton(role));
         userRepository.save(userData);
-        return userData;
+        UserFullResponseDto userFullResponseDto = modelMapper.map(userData,UserFullResponseDto.class);
+        return userFullResponseDto;
     }
 
-    public List<UserData> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserFullResponseDto> getAllUsers() {
+        return userRepository.findAll().stream().map(Mapper::userToFullResponseDto) .collect(Collectors.toList());
     }
 
 
-    public UserData gitUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", id)));
+    public UserFullResponseDto gitUserById(Long id) {
+       UserData userData =  userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", id)));
+        return Mapper.userToFullResponseDto(userData);
     }
 
-    public UserData updateUser(UserUpdateRequestDto requestDto) {
+    public UserFullResponseDto updateUser(UserUpdateRequestDto requestDto) {
         if (requestDto == null) {
             throw new IllegalArgumentException("Request cannot be empty");
         }
@@ -116,14 +122,15 @@ public class UserService implements UserDetailsService {
         userData.setNickname(requestDto.getNickName());
         userData.setName(requestDto.getName());
         userData.setSurname(requestDto.getSurname());
-        userData.setAvatar(requestDto.getFoto());
+        userData.setAvatar(requestDto.getAvatar());
         userData.setBirthdayDate(requestDto.getBirthdayDate());
         userData.setInternalCurrency(requestDto.getInternalCurrency());
         userRepository.save(userData);
-        return userData;
+       UserFullResponseDto userFullResponseDto = Mapper.userToFullResponseDto(userData);
+        return userFullResponseDto;
     }
 
-    public UserData blockUser(Long adminId, Long userId) {
+    public UserFullResponseDto blockUser(Long adminId, Long userId) {
         UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
         if (!user.getStatus()) {
@@ -135,10 +142,10 @@ public class UserService implements UserDetailsService {
             throw new InvalidRoleException("Only the administrator can block the user");
         }
 
-        return user;
+        return Mapper.userToFullResponseDto(user);
     }
 
-    public UserData unlockUser(Long adminId, Long userId) {
+    public UserFullResponseDto unlockUser(Long adminId, Long userId) {
         UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
         if (user.getStatus()) {
@@ -151,10 +158,10 @@ public class UserService implements UserDetailsService {
             throw new InvalidRoleException("Only the administrator can unlock the user");
         }
 
-        return user;
+        return Mapper.userToFullResponseDto(user);
     }
 
-    public UserData appointAnAdministrator(Long adminId, Long userId) {
+    public UserFullResponseDto appointAnAdministrator(Long adminId, Long userId) {
 
         UserData admin = userRepository.findById(adminId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", adminId)));
         UserData user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", userId)));
@@ -171,7 +178,7 @@ public class UserService implements UserDetailsService {
             throw new InvalidRoleException("Only the administrator can appoint an the admin");
         }
 
-        return user;
+        return Mapper.userToFullResponseDto(user);
 
     }
 
@@ -203,18 +210,19 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public List<UserData> getAllBlockUsers(Boolean status) {
-        return userRepository.findAllByStatus(status);
+    public List<UserFullResponseDto> getAllBlockUsers(Boolean status) {
+
+        return userRepository.findAllByStatus(status).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
-    public List<UserData> getUsersByRatingBetween(Double rating) {
+    public List<UserFullResponseDto> getUsersByRatingBetween(Double rating) {
         double max = rating +1;
-        return userRepository.findAllByRatingBetween(rating,max);
+        return userRepository.findAllByRatingBetween(rating,max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
-    public List<UserData> getUsersByRating(Double rating) {
+    public List<UserFullResponseDto> getUsersByRating(Double rating) {
         double max = rating +1;
-        return userRepository.findAllByRatingBetween(rating,max);
+        return userRepository.findAllByRatingBetween(rating,max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
 
@@ -304,8 +312,8 @@ public class UserService implements UserDetailsService {
         return password.matches(passwordRegex);
     }
 
-    public List<UserData> searchUsers(String keyword) {
-        return userRepository.searchUsers(keyword);
+    public List<UserFullResponseDto> searchUsers(String keyword) {
+        return userRepository.searchUsers(keyword).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
     private boolean userIsAdmin(UserData user) {

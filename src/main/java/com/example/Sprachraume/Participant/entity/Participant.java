@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "participant")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@EqualsAndHashCode(exclude = {"room"})
+@EqualsAndHashCode(exclude = {"room", "user"})
 public class Participant {
 
     @Id
@@ -30,7 +30,6 @@ public class Participant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
-    @JsonBackReference
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)

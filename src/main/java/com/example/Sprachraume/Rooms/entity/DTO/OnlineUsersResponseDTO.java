@@ -1,6 +1,7 @@
 package com.example.Sprachraume.Rooms.entity.DTO;
 
 
+import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OnlineUsersResponseDTO {
-    private List<OnlineUserDTO> users;
+    private List<UserFullResponseDto> users;
     private Long count;
 
 }

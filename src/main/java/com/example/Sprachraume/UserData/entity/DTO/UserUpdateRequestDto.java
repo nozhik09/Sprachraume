@@ -19,6 +19,6 @@ public class UserUpdateRequestDto {
     private String nativeLanguage;
     private String learningLanguage;
     private String skillLevel;
-    private String foto;
+    private String avatar;
     private String internalCurrency;
 }

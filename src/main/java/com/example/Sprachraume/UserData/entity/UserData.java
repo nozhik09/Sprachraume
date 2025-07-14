@@ -26,7 +26,7 @@
     @AllArgsConstructor
     @NoArgsConstructor
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @EqualsAndHashCode(exclude = {"nativeLanguages", "learningLanguages"})
+    @EqualsAndHashCode(exclude = {"createdRooms", "nativeLanguages", "learningLanguages"})
     public class UserData implements UserDetails {
 
         @Id
@@ -65,11 +65,9 @@
         @Column(name = "status")
         private Boolean status;
 
-        @JsonManagedReference
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private Set<NativeLanguages> nativeLanguages = new HashSet<>();
 
-        @JsonManagedReference
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private Set<LearningLanguage> learningLanguages = new HashSet<>();
 
@@ -79,8 +77,7 @@
                 inverseJoinColumns = @JoinColumn(name = "roles_id"))
         private Set<Role> roles;
 
-        @JsonManagedReference("creator-rooms")
-        @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
         private Set<Room> createdRooms;
 
 

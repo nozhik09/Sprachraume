@@ -1,13 +1,15 @@
 package com.example.Sprachraume.Languages.controller;
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
-import com.example.Sprachraume.Languages.entity.DTO.AddLanguageDTO;
+import com.example.Sprachraume.Languages.entity.DTO.AddLanguageRequestDTO;
 import com.example.Sprachraume.Languages.entity.DTO.AddLearningLanguageDTO;
 import com.example.Sprachraume.Languages.entity.DTO.FindUserByNativeAndLearningDTO;
+import com.example.Sprachraume.Languages.entity.DTO.Response.LanguageResponseDTO;
 import com.example.Sprachraume.Languages.entity.Languages;
 import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Languages.service.LanguagesService;
+import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +35,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping("/addNativeLanguage")
-    public NativeLanguages addNativeLanguage(@RequestBody AddLanguageDTO addLanguageDTO) {
+    public LanguageResponseDTO addNativeLanguage(@RequestBody AddLanguageRequestDTO addLanguageDTO) {
         return languagesService.addNativeLanguages(addLanguageDTO);
     }
 
@@ -46,7 +48,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping("/addLearningLanguage")
-    public LearningLanguage addLearningLanguage(@RequestBody AddLearningLanguageDTO addLearningLanguageDTO) {
+    public LanguageResponseDTO addLearningLanguage(@RequestBody AddLearningLanguageDTO addLearningLanguageDTO) {
         return languagesService.addLearningLanguage(addLearningLanguageDTO);
     }
 
@@ -67,7 +69,7 @@ public class LanguageController {
             @ApiResponse(responseCode = "400", description = "Language not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))})
     @GetMapping("/nativeLanguage")
-    public List<UserData> getUserByNativeLanguage(@RequestParam String languageName) {
+    public List<UserFullResponseDto> getUserByNativeLanguage(@RequestParam String languageName) {
         return languagesService.getAllUserByNativeLanguages(languageName);
     }
 
@@ -80,7 +82,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/learningLanguages")
-    public List<UserData> getUserByLearningLanguage(@RequestParam String languages) {
+    public List<UserFullResponseDto> getUserByLearningLanguage(@RequestParam String languages) {
         return languagesService.getAllUserByLearningLanguage(languages);
     }
 
@@ -92,7 +94,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/learningnative")
-    public List<UserData> getUserByLearningAndNativeLanguage(@RequestBody FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
+    public List<UserFullResponseDto> getUserByLearningAndNativeLanguage(@RequestBody FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
         return languagesService.getAllUserByLearningAndNativeLanguages(findUserByNativeAndLearningDTO);
     }
 
@@ -104,7 +106,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @DeleteMapping("deleteLearning")
-    public UserData deleteLearningLanguage(@RequestParam Long userId, @RequestParam Long languagesId) {
+    public UserFullResponseDto deleteLearningLanguage(@RequestParam Long userId, @RequestParam Long languagesId) {
         return languagesService.deleteLearningLanguage(userId, languagesId);
     }
 
@@ -116,7 +118,7 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @DeleteMapping("deleteNative")
-    public UserData deleteNativeLanguage(@RequestParam Long userId, @RequestParam Long languagesId) {
+    public UserFullResponseDto deleteNativeLanguage(@RequestParam Long userId, @RequestParam Long languagesId) {
         return languagesService.deleteNativeLanguage(userId, languagesId);
     }
 }

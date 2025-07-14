@@ -1,15 +1,18 @@
 package com.example.Sprachraume.Languages.service;
 
 import com.example.Sprachraume.Exceptions.Exception.*;
-import com.example.Sprachraume.Languages.entity.DTO.AddLanguageDTO;
+import com.example.Sprachraume.Languages.entity.DTO.AddLanguageRequestDTO;
 import com.example.Sprachraume.Languages.entity.DTO.AddLearningLanguageDTO;
 import com.example.Sprachraume.Languages.entity.DTO.FindUserByNativeAndLearningDTO;
+import com.example.Sprachraume.Languages.entity.DTO.Response.LanguageResponseDTO;
 import com.example.Sprachraume.Languages.entity.Languages;
 import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Languages.repository.LanguagesRepository;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.Languages.repository.NativeLanguagesRepository;
+import com.example.Sprachraume.Mapping.Mapper;
+import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +28,9 @@ public class LanguagesService {
     private final UserRepository userRepository;
     private final LanguagesRepository languagesRepository;
     private final LearningLanguageRepository learningLanguageRepository;
-private final NativeLanguagesRepository nativeLanguagesRepository;
+    private final NativeLanguagesRepository nativeLanguagesRepository;
 
-    public NativeLanguages addNativeLanguages(AddLanguageDTO addLanguageDTO) {
+    public LanguageResponseDTO addNativeLanguages(AddLanguageRequestDTO addLanguageDTO) {
         if (addLanguageDTO.getUserId() == null) {
             throw new NullOrEmptyException("User ID must not be null");
         }
@@ -54,10 +57,11 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         userData.getNativeLanguages().add(nativeLanguages);
         userRepository.save(userData);
 
-        return nativeLanguages;
+        return Mapper.mapToNativeLanguage(nativeLanguages);
+
     }
 
-    public LearningLanguage addLearningLanguage(AddLearningLanguageDTO addLearningLanguageDTO) {
+    public LanguageResponseDTO addLearningLanguage(AddLearningLanguageDTO addLearningLanguageDTO) {
         UserData userData = userRepository.findById(addLearningLanguageDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", addLearningLanguageDTO.getUserId())));
 
@@ -78,8 +82,7 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         learningLanguageRepository.save(learningLanguage);
         userData.getLearningLanguages().add(learningLanguage);
         userRepository.save(userData);
-
-        return learningLanguage;
+        return Mapper.mapToLearningLanguage(learningLanguage);
     }
 
 
@@ -87,71 +90,66 @@ private final NativeLanguagesRepository nativeLanguagesRepository;
         return languagesRepository.findAll();
     }
 
-    public List<UserData> getAllUserByNativeLanguages(String languageName) {
-        return userRepository.findByNativeLanguages(languageName);
+    public List<UserFullResponseDto> getAllUserByNativeLanguages(String languageName) {
+        return userRepository.findByNativeLanguages(languageName).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
-    public List<UserData> getAllUserByLearningLanguage(String languageName) {
+    public List<UserFullResponseDto> getAllUserByLearningLanguage(String languageName) {
         Languages language = languagesRepository.findByName(languageName)
                 .orElseThrow(() -> new UserNotFoundException("Язык не найден: " + languageName));
 
-        List<LearningLanguage> learningLanguages = learningLanguageRepository.findByLanguage(language);
-
-        return learningLanguages.stream()
-                .map(LearningLanguage::getUser)
+       return learningLanguageRepository.findByLanguage(language).stream()
+                .map(LearningLanguage::getUser).map(Mapper::userToFullResponseDto)
                 .collect(Collectors.toList());
+
     }
 
-    public List<UserData> getAllUserByLearningAndNativeLanguages(FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
+    public List<UserFullResponseDto> getAllUserByLearningAndNativeLanguages(FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
         Set<UserData> nativeUsers = nativeLanguagesRepository.findByLanguage_Name(findUserByNativeAndLearningDTO.getNativeLanguage())
                 .stream().map(NativeLanguages::getUser).collect(Collectors.toSet());
 
-        Set<UserData> learningUsers = learningLanguageRepository.findByLanguage_Name(findUserByNativeAndLearningDTO.getLearningLanguage())
-                .stream().map(LearningLanguage::getUser).collect(Collectors.toSet());
+       return learningLanguageRepository.findByLanguage_Name(findUserByNativeAndLearningDTO.getLearningLanguage())
+                .stream().map(LearningLanguage::getUser).map(Mapper::userToFullResponseDto).collect(Collectors.toList());
 
 
-        return nativeUsers.stream()
-                .filter(learningUsers::contains)
-                .collect(Collectors.toList());
+
     }
 
 
-
-
-    public UserData deleteLearningLanguage(Long userId, Long languagesId){
-        if (userId==null || languagesId==null){
+    public UserFullResponseDto deleteLearningLanguage(Long userId, Long languagesId) {
+        if (userId == null || languagesId == null) {
             throw new IllegalArgumentException("User ID or Languages ID must not be null");
         }
 
-        UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFoundException("Language not found"));
-        LearningLanguage learningLanguage = learningLanguageRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
-        -> new AlreadyUsedException("User is not learning this language"));
+        UserData userData = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(() -> new LanguageNotFoundException("Language not found"));
+        LearningLanguage learningLanguage = learningLanguageRepository.findByUserAndLanguage(userData, languages).orElseThrow(()
+                -> new AlreadyUsedException("User is not learning this language"));
 
 
         userData.getLearningLanguages().remove(learningLanguage);
         learningLanguageRepository.delete(learningLanguage);
         userRepository.save(userData);
-        return userData;
+      return   Mapper.userToFullResponseDto(userData);
 
     }
 
 
-    public UserData deleteNativeLanguage(Long userId, Long languagesId){
-        if (userId==null || languagesId==null){
+    public UserFullResponseDto deleteNativeLanguage(Long userId, Long languagesId) {
+        if (userId == null || languagesId == null) {
             throw new IllegalArgumentException("User ID or Languages ID must not be null");
         }
 
-        UserData userData = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        Languages languages = languagesRepository.findById(languagesId).orElseThrow(()->new LanguageNotFoundException("Language not found"));
-        NativeLanguages nativeLanguages = nativeLanguagesRepository.findByUserAndLanguage(userData,languages).orElseThrow(()
+        UserData userData = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Languages languages = languagesRepository.findById(languagesId).orElseThrow(() -> new LanguageNotFoundException("Language not found"));
+        NativeLanguages nativeLanguages = nativeLanguagesRepository.findByUserAndLanguage(userData, languages).orElseThrow(()
                 -> new AlreadyUsedException("User is not learning this language"));
 
 
         userData.getNativeLanguages().remove(nativeLanguages);
         nativeLanguagesRepository.delete(nativeLanguages);
         userRepository.save(userData);
-        return userData;
+        return Mapper.userToFullResponseDto(userData);
     }
 
 
