@@ -3,6 +3,7 @@ package com.example.Sprachraume.Rooms.controller;
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.Participant.entity.Participant;
+import com.example.Sprachraume.Participant.entity.ParticipantDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.DTO.OnlineUsersResponseDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
@@ -50,7 +51,7 @@ public class RoomController {
             @ApiResponse(responseCode = "409", description = "Already requested or already a participant", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping("/participant/invite/sendInvitation")
-    public Participant requestToJoinRoom(@RequestParam Long userId, @RequestParam Long roomId) {
+    public ParticipantDTO requestToJoinRoom(@RequestParam Long userId, @RequestParam Long roomId) {
         return roomService.requestToJoinRoom(userId, roomId);
     }
 
@@ -61,7 +62,7 @@ public class RoomController {
             @ApiResponse(responseCode = "409", description = "Invitation already accepted or declined", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/participant/invite/accept")
-    public Participant acceptInvitationByUser(@RequestParam Long participantId, @RequestParam Long roomId) {
+    public ParticipantDTO acceptInvitationByUser(@RequestParam Long participantId, @RequestParam Long roomId) {
         return roomService.acceptInvitationByUser(participantId, roomId);
     }
 
@@ -83,7 +84,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/participant/invite/getAccept")
-    public List<Room> getAcceptedRoomsByUser(@RequestParam Long userId) {
+    public List<RoomFullDTO> getAcceptedRoomsByUser(@RequestParam Long userId) {
         return roomService.getAcceptedRoomsByUser(userId);
     }
 
@@ -93,7 +94,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("participant/invite/getPending")
-    public List<Room> getPendingInvitationsByUser(@RequestParam Long userId) {
+    public List<RoomFullDTO> getPendingInvitationsByUser(@RequestParam Long userId) {
         return roomService.getPendingInvitationsByUser(userId);
     }
 
@@ -103,7 +104,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/participant/invite/received")
-    public List<Room> getPendingInvitationsReceivedByUser(Long userId) {
+    public List<RoomFullDTO> getPendingInvitationsReceivedByUser(Long userId) {
         return roomService.getPendingInvitationsReceivedByUser(userId);
     }
 
@@ -126,7 +127,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "User or Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PostMapping("/adminRoom/invite")
-    public Participant inviteUserToRoom(@RequestParam Long userId, @RequestParam Long roomId) {
+    public ParticipantDTO inviteUserToRoom(@RequestParam Long userId, @RequestParam Long roomId) {
         return roomService.inviteUserToRoom(userId, roomId);
     }
 
@@ -136,7 +137,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/adminRoom/checkPendingInvite")
-    public List<Participant> getPendingInviteByAdmin(@RequestParam Long creatorId, @RequestParam Long roomId) {
+    public List<ParticipantDTO> getPendingInviteByAdmin(@RequestParam Long creatorId, @RequestParam Long roomId) {
         return roomService.getPendingInviteByAdmin(creatorId, roomId);
     }
 
@@ -146,7 +147,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/adminRoom/invite/participant")
-    public List<Participant> getPendingRequestsSentByUsers(Long creatorId, Long roomId) {
+    public List<ParticipantDTO> getPendingRequestsSentByUsers(Long creatorId, Long roomId) {
         return roomService.getPendingRequestsSentByUsers(creatorId, roomId);
     }
 
@@ -157,7 +158,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/adminRoom/invite/accept")
-    public List<Participant> getAcceptedInviteByAdmin(Long creatorId, Long roomId) {
+    public List<ParticipantDTO> getAcceptedInviteByAdmin(Long creatorId, Long roomId) {
         return roomService.getAcceptedInviteByAdmin(creatorId, roomId);
     }
 
@@ -168,7 +169,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/adminRoom/accept")
-    public Participant acceptRequestByAdmin(@RequestParam Long participantId) {
+    public ParticipantDTO acceptRequestByAdmin(@RequestParam Long participantId) {
         return roomService.acceptRequestByAdmin(participantId);
     }
 
@@ -179,18 +180,18 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/adminRoom/decline")
-    public Participant declineRequestByAdmin(@RequestParam Long participantId) {
+    public ParticipantDTO declineRequestByAdmin(@RequestParam Long participantId) {
         return roomService.declineRequestByAdmin(participantId);
     }
 
     @GetMapping("/adminRoom/allRoom")
-    public List<Room> findAllRoomByCreator(@RequestParam Long userId){
+    public List<RoomFullDTO> findAllRoomByCreator(@RequestParam Long userId){
         return roomService.findAllRoomsByCreator(userId);
     }
 
     @Operation(summary = "Все созданыекомнаты", description = "Получить список всех доступных комнат")
     @GetMapping("/allRoom")
-    public List<Room> getAllRoom() {
+    public List<RoomFullDTO> getAllRoom() {
         return roomService.getAllRoom();
     }
 
@@ -198,7 +199,7 @@ public class RoomController {
 
     @Operation(summary = "Отфильтровать комнаты по нескольким параметрам(Язык,статус комнаты,минимальный возраст, категория", description = "Получить список комнат по фильтрам")
     @GetMapping("/filter")
-    public List<Room> filterRooms(
+    public List<RoomFullDTO> filterRooms(
             @RequestParam(required = false) String language,
             @RequestParam(required = false) Boolean status,
             @RequestParam(required = false) Long minAge,
@@ -239,7 +240,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/id")
-    public Room getRoom(@RequestParam Long roomId) {
+    public RoomFullDTO getRoom(@RequestParam Long roomId) {
         return roomService.getRoom(roomId);
     }
 

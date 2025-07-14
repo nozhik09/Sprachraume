@@ -22,8 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "room")
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@EqualsAndHashCode(exclude = {"participants"})
+@EqualsAndHashCode(exclude = {"creator", "participants"})
 public class Room {
 
     @Id
@@ -82,13 +81,11 @@ public class Room {
     private String roomUrl;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
     private Set<Participant> participants;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
-    @JsonIgnoreProperties({"rooms", "hibernateLazyInitializer", "handler"})
     private UserData creator;
 
 }
