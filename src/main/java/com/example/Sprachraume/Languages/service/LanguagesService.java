@@ -90,25 +90,25 @@ public class LanguagesService {
         return languagesRepository.findAll();
     }
 
+
+
     public List<UserFullResponseDto> getAllUserByNativeLanguages(String languageName) {
-        return userRepository.findByNativeLanguages(languageName).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
+        return nativeLanguagesRepository.findByLanguageNameIgnoreCase(languageName).stream()
+                .map(NativeLanguages::getUser)
+                .map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
     public List<UserFullResponseDto> getAllUserByLearningLanguage(String languageName) {
-        Languages language = languagesRepository.findByName(languageName)
-                .orElseThrow(() -> new UserNotFoundException("Язык не найден: " + languageName));
-
-       return learningLanguageRepository.findByLanguage(language).stream()
+       return learningLanguageRepository.findByLanguageNameIgnoreCase(languageName).stream()
                 .map(LearningLanguage::getUser).map(Mapper::userToFullResponseDto)
                 .collect(Collectors.toList());
-
     }
 
     public List<UserFullResponseDto> getAllUserByLearningAndNativeLanguages(FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
         Set<UserData> nativeUsers = nativeLanguagesRepository.findByLanguage_Name(findUserByNativeAndLearningDTO.getNativeLanguage())
                 .stream().map(NativeLanguages::getUser).collect(Collectors.toSet());
 
-       return learningLanguageRepository.findByLanguage_Name(findUserByNativeAndLearningDTO.getLearningLanguage())
+       return learningLanguageRepository.findByLanguageNameIgnoreCase(findUserByNativeAndLearningDTO.getLearningLanguage())
                 .stream().map(LearningLanguage::getUser).map(Mapper::userToFullResponseDto).collect(Collectors.toList());
 
 

@@ -17,13 +17,12 @@ import com.example.Sprachraume.Rooms.repository.RoomRepository;
 import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
+import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -109,7 +108,7 @@ public class RoomService {
         String dailyRoomUrl = dailyRoomService.createDailyRoom();
         newRoom.setRoomUrl(dailyRoomUrl);
         participantRepository.save(participant);
-        Room savedRoom = roomRepository.save(newRoom);
+         roomRepository.save(newRoom);
         return Mapper.mapCreatedRooms(newRoom,userData);
     }
 
@@ -333,6 +332,7 @@ public class RoomService {
 
 
     public List<RoomFullDTO> filterRooms(String language, Boolean status, Long minAge, String category) {
+
         Specification<Room> spec = Specification.where(null);
 
         if (language != null && !language.isEmpty()) {
@@ -351,8 +351,10 @@ public class RoomService {
         }
 
         if (category != null && !category.isEmpty()) {
-            spec = spec.and((root, query, builder) ->
-                    builder.greaterThanOrEqualTo(root.get("age"), category));
+            spec = spec.and((root, query, builder) -> {
+                Join<Object, Object> categoryJoin = root.join("category");
+                return builder.equal(categoryJoin.get("name"), category); // или get("id") если нужно по id
+            });
         }
 
 
@@ -475,6 +477,8 @@ public class RoomService {
             return 0;
         }
     }
+
+    //TODO изменение статуса или удаление комнаты
 
 
 //    public RoomFullDTO mapRoomToFullDTO(Room room) {
