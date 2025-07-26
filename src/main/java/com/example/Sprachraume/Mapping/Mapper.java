@@ -98,7 +98,7 @@ public class Mapper {
         LanguageResponseDTO languageResponseDTO = new LanguageResponseDTO();
 
         languageResponseDTO.setId(languages.getId());
-        languageResponseDTO.setLanguageId(languages.getId());
+        languageResponseDTO.setLanguageId(languages.getLanguage().getId());
         languageResponseDTO.setUserId(languages.getUser().getId());
         languageResponseDTO.setSkillLvl(languages.getSkillLevel());
         return languageResponseDTO;
@@ -107,7 +107,7 @@ public class Mapper {
     public static LanguageResponseDTO mapToLearningLanguage(LearningLanguage languages){
         LanguageResponseDTO languageResponseDTO = new LanguageResponseDTO();
         languageResponseDTO.setId(languages.getId());
-        languageResponseDTO.setLanguageId(languages.getId());
+        languageResponseDTO.setLanguageId(languages.getLanguage().getId());
         languageResponseDTO.setUserId(languages.getUser().getId());
         languageResponseDTO.setSkillLvl(languages.getSkillLevel());
         return languageResponseDTO;

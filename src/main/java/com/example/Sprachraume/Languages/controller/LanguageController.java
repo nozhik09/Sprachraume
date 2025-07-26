@@ -94,7 +94,10 @@ public class LanguageController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @GetMapping("/learningnative")
-    public List<UserFullResponseDto> getUserByLearningAndNativeLanguage(@RequestBody FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO) {
+    public List<UserFullResponseDto> getUserByLearningAndNativeLanguage(
+            @RequestParam String learningLanguage,
+            @RequestParam String nativeLanguage) {
+        FindUserByNativeAndLearningDTO findUserByNativeAndLearningDTO = new FindUserByNativeAndLearningDTO(learningLanguage, nativeLanguage);
         return languagesService.getAllUserByLearningAndNativeLanguages(findUserByNativeAndLearningDTO);
     }
 
