@@ -6,6 +6,7 @@ import com.example.Sprachraume.Exceptions.Exception.InvalidPasswordException;
 import com.example.Sprachraume.Exceptions.Exception.PasswordIsNotValidException;
 import com.example.Sprachraume.Exceptions.Exception.UserIsBlockingException;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
+import com.example.Sprachraume.Mapping.Mapper;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.service.UserService;
 import com.example.Sprachraume.security.DTO.LoginRequestDTO;
@@ -54,13 +55,7 @@ public class AuthService {
             refreshStorage.put(email, refreshToken);
 
 
-            LoginResponseDTO responseDTO = modelMapper.map(foundUser, LoginResponseDTO.class);
-            responseDTO.setAccessToken(accessToken);
-            responseDTO.setRefreshToken(refreshToken);
-            responseDTO.setMessage("Вы успешно вошли в аккаунт");
-            return responseDTO;
-
-
+            return Mapper.mapToLoginResponseDTO(foundUser,accessToken,refreshToken);
         }else{
             throw new InvalidPasswordException("Вы ввели неверный пароль");
         }

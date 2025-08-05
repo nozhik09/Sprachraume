@@ -10,6 +10,7 @@ import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.UserData;
+import com.example.Sprachraume.security.DTO.LoginResponseDTO;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -31,6 +32,31 @@ public class Mapper {
         dto.setNativeLanguages(user.getNativeLanguages().stream().map(Mapper::mapToNativeLanguage).collect(Collectors.toSet()));
         dto.setLearningLanguages(user.getLearningLanguages().stream().map(Mapper::mapToLearningLanguage).collect(Collectors.toSet()));
         dto.setCreatedRooms(user.getCreatedRooms().stream().map(Room::getId).collect(Collectors.toSet()));
+
+        return dto;
+    }
+
+
+
+    public static LoginResponseDTO mapToLoginResponseDTO(UserData user,String accessToken,String refreshToken) {
+        LoginResponseDTO dto = new LoginResponseDTO();
+        dto.setId(user.getId());
+        dto.setNickname(user.getNickname());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setSurname(user.getSurname());
+        dto.setBirthdayDate(user.getBirthdayDate());
+        dto.setAvatar(user.getAvatar());
+        dto.setRating(user.getRating());
+        dto.setInternalCurrency(user.getInternalCurrency());
+        dto.setStatus(user.getStatus());
+        dto.setRoles(new HashSet<>(user.getRoles()));
+        dto.setNativeLanguages(user.getNativeLanguages().stream().map(Mapper::mapToNativeLanguage).collect(Collectors.toSet()));
+        dto.setLearningLanguages(user.getLearningLanguages().stream().map(Mapper::mapToLearningLanguage).collect(Collectors.toSet()));
+        dto.setCreatedRooms(user.getCreatedRooms().stream().map(Room::getId).collect(Collectors.toSet()));
+        dto.setAccessToken(accessToken);
+        dto.setRefreshToken(refreshToken);
+        dto.setMessage("Вы успешно залогинились");
 
         return dto;
     }
