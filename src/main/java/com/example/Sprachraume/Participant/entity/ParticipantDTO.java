@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipantDTO {
+    private Long id;
     private Long userId;
     private ParticipantStatus status;
     private ParticipantType participantType;

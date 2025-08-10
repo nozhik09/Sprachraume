@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
     private final ParticipantRepository participantRepository;
     private final NativeLanguagesRepository nativeLanguagesRepository;
     private final LearningLanguageRepository learningLanguageRepository;
-private final ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public UserFullResponseDto registerNewUser(UserRequestDto requestDto) {
         if (requestDto == null) {
@@ -90,17 +90,17 @@ private final ModelMapper modelMapper;
         }
         userData.setRoles(Collections.singleton(role));
         userRepository.save(userData);
-        UserFullResponseDto userFullResponseDto = modelMapper.map(userData,UserFullResponseDto.class);
+        UserFullResponseDto userFullResponseDto = modelMapper.map(userData, UserFullResponseDto.class);
         return userFullResponseDto;
     }
 
     public List<UserFullResponseDto> getAllUsers() {
-        return userRepository.findAll().stream().map(Mapper::userToFullResponseDto) .collect(Collectors.toList());
+        return userRepository.findAll().stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
 
     public UserFullResponseDto gitUserById(Long id) {
-       UserData userData =  userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", id)));
+        UserData userData = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(String.format("User with %s ID found", id)));
         return Mapper.userToFullResponseDto(userData);
     }
 
@@ -126,7 +126,7 @@ private final ModelMapper modelMapper;
         userData.setBirthdayDate(requestDto.getBirthdayDate());
         userData.setInternalCurrency(requestDto.getInternalCurrency());
         userRepository.save(userData);
-       UserFullResponseDto userFullResponseDto = Mapper.userToFullResponseDto(userData);
+        UserFullResponseDto userFullResponseDto = Mapper.userToFullResponseDto(userData);
         return userFullResponseDto;
     }
 
@@ -216,40 +216,40 @@ private final ModelMapper modelMapper;
     }
 
     public List<UserFullResponseDto> getUsersByRatingBetween(Double rating) {
-        double max = rating +1;
-        return userRepository.findAllByRatingBetween(rating,max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
+        double max = rating + 1;
+        return userRepository.findAllByRatingBetween(rating, max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
     public List<UserFullResponseDto> getUsersByRating(Double rating) {
-        double max = rating +1;
-        return userRepository.findAllByRatingBetween(rating,max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
+        double max = rating + 1;
+        return userRepository.findAllByRatingBetween(rating, max).stream().map(Mapper::userToFullResponseDto).collect(Collectors.toList());
     }
 
 
+    public String uploadAvatar(Long userId, MultipartFile file) throws IOException {
+        UserData user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        public String uploadAvatar(Long userId, MultipartFile file) throws IOException {
-            UserData user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+        String uploadDir = "uploads/avatars/";
+        String originalFileName = file.getOriginalFilename();
+        assert originalFileName != null;
+        String extension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+        String filename = UUID.randomUUID() + extension;
 
-            String uploadDir = "uploads/avatars/";
-            String originalFileName = file.getOriginalFilename();
-            String extension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-            String filename = UUID.randomUUID() + extension;
-
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            Path filePath = uploadPath.resolve(filename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            String avatarUrl = "/api/users/avatar/" + filename;
-            user.setAvatar(avatarUrl);
-            userRepository.save(user);
-
-            return avatarUrl;
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
         }
+
+        Path filePath = uploadPath.resolve(filename);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        user.setAvatar(filename);
+        userRepository.save(user);
+
+        return filename;
+
+    }
 
 
     public ResponseEntity<Resource> getAvatarByUserId(Long userId) throws IOException {
@@ -259,7 +259,7 @@ private final ModelMapper modelMapper;
         String avatarPath = user.getAvatar();
 
         if (avatarPath == null || avatarPath.isBlank()) {
-            throw  new UserNotFoundException("avatar not found");
+            throw new UserNotFoundException("avatar not found");
         }
 
         String filename = Paths.get(avatarPath).getFileName().toString();
@@ -267,7 +267,7 @@ private final ModelMapper modelMapper;
         Resource resource = new UrlResource(filePath.toUri());
 
         if (!resource.exists() || !resource.isReadable()) {
-            throw  new UserNotFoundException("sdsada");
+            throw new UserNotFoundException("sdsada");
         }
 
         String contentType = Files.probeContentType(filePath);
@@ -291,8 +291,6 @@ private final ModelMapper modelMapper;
 
         return resource;
     }
-
-
 
 
     @Override

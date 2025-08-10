@@ -136,9 +136,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid file")
     })
     @PostMapping("/uploadAvatar")
-    public ResponseEntity<String> uploadAvatar(
-            @RequestParam Long userId,
-            @RequestParam MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadAvatar(@RequestParam Long userId, @RequestParam MultipartFile file) throws IOException {
 
         String avatarUrl = userService.uploadAvatar(userId, file);
         return ResponseEntity.ok("Uploaded successfully. URL: " + avatarUrl);
