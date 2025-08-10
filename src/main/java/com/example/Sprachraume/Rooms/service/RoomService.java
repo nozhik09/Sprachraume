@@ -158,12 +158,12 @@ public class RoomService {
 
 
     //Пользователь принимает приглашение от адммина комнаты
-    public ParticipantDTO acceptInvitationByUser(Long participantId, Long roomId) {
-        Participant participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
-
+    public ParticipantDTO acceptInvitationByUser(Long userId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+                -> new UserNotFoundException("Participant not found with ID: " + userId));
+
 
         if (participant.getStatus() != ParticipantStatus.PENDING) {
             throw new InvitationAlreadyRespondedException("Invitation already responded to");
@@ -178,13 +178,16 @@ public class RoomService {
     }
 
     // Админ отправил приглашение, пользователь отклоняет
-    public Participant declineInvitationByUser(Long participantId) {
-        Participant participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new UserNotFoundException("Participant not found with ID: " + participantId));
+    public ParticipantDTO declineInvitationByUser(Long userId,Long roomId) {
+        roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+                -> new UserNotFoundException("Participant not found with ID: " + userId));
 
 
         participant.setStatus(ParticipantStatus.DECLINED);
-        return participantRepository.save(participant);
+         participantRepository.save(participant);
+         return modelMapper.map(participant,ParticipantDTO.class);
     }
 
 
@@ -213,6 +216,10 @@ public class RoomService {
         participant.setStatus(ParticipantStatus.PENDING);
         participant.setParticipantType(ParticipantType.REQUESTED_BY_USER);
         participantRepository.save(participant);
+//        Participant participant1 = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId);
+
+
+
         return modelMapper.map(participant,ParticipantDTO.class);
     }
 
@@ -265,9 +272,9 @@ public class RoomService {
 
 
     // админ подтверждает пришлашение
-    public ParticipantDTO acceptRequestByAdmin(Long participantId) {
-        Participant participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new UserNotFoundException("Request not found"));
+    public ParticipantDTO acceptRequestByAdmin(Long userId,Long roomId) {
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+                -> new UserNotFoundException("Participant not found with ID: " + userId));
 
         Room room = roomRepository.findRoomByParticipants(participant);
         room.setQuantityParticipant(room.getQuantityParticipant() + 1L);
@@ -278,9 +285,11 @@ public class RoomService {
 
 
     // админ отклоняет пришлашение
-    public ParticipantDTO declineRequestByAdmin(Long participantId) {
-        Participant participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new UserNotFoundException("Request not found"));
+    public ParticipantDTO declineRequestByAdmin(Long userId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+                -> new UserNotFoundException("Participant not found with ID: " + userId));
 
         participant.setStatus(ParticipantStatus.DECLINED);
        participantRepository.save(participant);
@@ -436,13 +445,13 @@ public class RoomService {
     }
 
 
-    public Room extendTime(Long roomId, OffsetDateTime endTime) {
+    public RoomFullDTO extendTime(Long roomId, OffsetDateTime endTime) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
 
         if (room.getStatus()) {
             room.setEndTime(endTime);
         }
-        return room;
+        return Mapper.mapToRooms(room);
     }
 
 

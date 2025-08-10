@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -62,8 +61,8 @@ public class RoomController {
             @ApiResponse(responseCode = "409", description = "Invitation already accepted or declined", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/participant/invite/accept")
-    public ParticipantDTO acceptInvitationByUser(@RequestParam Long participantId, @RequestParam Long roomId) {
-        return roomService.acceptInvitationByUser(participantId, roomId);
+    public ParticipantDTO acceptInvitationByUser(@RequestParam Long userId, @RequestParam Long roomId) {
+        return roomService.acceptInvitationByUser(userId, roomId);
     }
 
     @Operation(summary = "Decline invitation to a room", description = "User declines an invitation to a specific room")
@@ -74,8 +73,8 @@ public class RoomController {
     })
 
     @PutMapping("/participant/invite/decline")
-    public Participant declineInvitationByUser(@RequestParam Long participantId) {
-        return roomService.declineInvitationByUser(participantId);
+    public ParticipantDTO declineInvitationByUser(@RequestParam Long userId,Long roomId) {
+        return roomService.declineInvitationByUser(userId,roomId);
     }
 
     @Operation(summary = "Get rooms where user accepted the invitation", description = "Получите все комнаты, где пользователь принял приглашение")
@@ -117,7 +116,7 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/extendTime")
-    public Room extendTime(@RequestParam Long roomId, @RequestBody OffsetDateTime endTime) {
+    public RoomFullDTO extendTime(@RequestParam Long roomId, @RequestBody OffsetDateTime endTime) {
         return roomService.extendTime(roomId, endTime);
     }
 
@@ -169,8 +168,8 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/adminRoom/accept")
-    public ParticipantDTO acceptRequestByAdmin(@RequestParam Long participantId) {
-        return roomService.acceptRequestByAdmin(participantId);
+    public ParticipantDTO acceptRequestByAdmin(@RequestParam Long userId, @RequestParam Long roomId) {
+        return roomService.acceptRequestByAdmin(userId,roomId);
     }
 
 
@@ -180,8 +179,8 @@ public class RoomController {
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
     })
     @PutMapping("/adminRoom/decline")
-    public ParticipantDTO declineRequestByAdmin(@RequestParam Long participantId) {
-        return roomService.declineRequestByAdmin(participantId);
+    public ParticipantDTO declineRequestByAdmin(@RequestParam Long userId,@RequestParam Long roomId) {
+        return roomService.declineRequestByAdmin(userId,roomId);
     }
 
     @GetMapping("/adminRoom/allRoom")
@@ -224,7 +223,7 @@ public class RoomController {
 
 
 
-    @Operation(summary = "показать все комнаты в которых участвовал пользователь")
+    @Operation(summary = "показать все комнаты в которых участвовал или будет пользователь")
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
