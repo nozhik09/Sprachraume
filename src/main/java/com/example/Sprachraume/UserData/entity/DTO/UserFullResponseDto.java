@@ -30,6 +30,7 @@ public class UserFullResponseDto {
     private Set<LanguageResponseDTO> learningLanguages;
     private Set<Long> createdRooms;
     private Set<Role> roles;
+    private Long counter;
 
 
 }

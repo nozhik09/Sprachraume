@@ -262,7 +262,6 @@ public class RoomService {
         if (!room.getCreator().getId().equals(creatorId)) {
             throw new InvalidRoleException("Only the room creator can view requests");
         }
-
         return participantRepository.findAllByRoomAndParticipantTypeAndStatus(
                 room,
                 ParticipantType.REQUESTED_BY_USER,

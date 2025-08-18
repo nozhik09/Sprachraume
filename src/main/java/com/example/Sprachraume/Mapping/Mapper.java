@@ -5,7 +5,6 @@ import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantDTO;
-import com.example.Sprachraume.Role.Role;
 import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
@@ -115,6 +114,7 @@ public class Mapper {
         dto.setStatus(room.getStatus());
         dto.setRoomUrl(room.getRoomUrl());
         dto.setCreator(room.getCreator().getId());
+        dto.setCountOnlineUser(room.getCountOnlineUser());
         dto.setCategoryName(room.getCategory() != null ? room.getCategory().getName() : null);
         dto.setParticipants(room.getParticipants().stream().map(Participant::getId).collect(Collectors.toSet()));
         return dto;
