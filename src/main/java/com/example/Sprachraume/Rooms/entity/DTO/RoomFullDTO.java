@@ -33,4 +33,5 @@ public class RoomFullDTO {
     private String categoryName;
     private Long creator;
     private Set<Long> participants;
+    private Long countOnlineUser;
 }

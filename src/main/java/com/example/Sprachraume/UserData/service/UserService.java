@@ -251,6 +251,8 @@ public class UserService implements UserDetailsService {
 
     }
 
+    // TODO  удаление аватара
+
 
     public ResponseEntity<Resource> getAvatarByUserId(Long userId) throws IOException {
         UserData user = userRepository.findById(userId)
