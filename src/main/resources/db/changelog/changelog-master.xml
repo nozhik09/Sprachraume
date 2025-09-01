@@ -34,5 +34,7 @@
     <include file="v.0.2.8add-many-to-many-online-users/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.2.9add-count-to-table-room/changelog.xml" relativeToChangelogFile="true"/>
     <include file="v.0.3.0add-defaultValue-to-collum-count/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.3.1add-table-notification/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="v.0.3.2add-to-table-notification-autoIncrement/changelog.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
