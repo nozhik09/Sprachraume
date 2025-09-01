@@ -7,6 +7,8 @@ import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Languages.repository.LearningLanguageRepository;
 import com.example.Sprachraume.Languages.repository.NativeLanguagesRepository;
 import com.example.Sprachraume.Mapping.Mapper;
+import com.example.Sprachraume.Notification.entity.Notification;
+import com.example.Sprachraume.Notification.repository.NotificationRepository;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.repository.ParticipantRepository;
 import com.example.Sprachraume.Role.Role;
@@ -18,10 +20,12 @@ import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
 import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,6 +59,7 @@ public class UserService implements UserDetailsService {
     private final NativeLanguagesRepository nativeLanguagesRepository;
     private final LearningLanguageRepository learningLanguageRepository;
     private final ModelMapper modelMapper;
+    private final NotificationRepository notificationRepository;
 
     public UserFullResponseDto registerNewUser(UserRequestDto requestDto) {
         if (requestDto == null) {
@@ -182,29 +187,16 @@ public class UserService implements UserDetailsService {
 
     }
 
-
+    @Transactional
     public String deleteAccount(Long id) {
         UserData user = userRepository.findById(id).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with id %s not found", id)));
-        List<NativeLanguages> nativeLanguagesList = nativeLanguagesRepository.findAllByUser(user);
-        if (!nativeLanguagesList.isEmpty()) {
-            nativeLanguagesRepository.deleteAll(nativeLanguagesList);
-            user.getNativeLanguages().clear();
-        }
-        List<LearningLanguage> learningLanguageList = learningLanguageRepository.findAllByUser(user);
-        if (!learningLanguageList.isEmpty()) {
-            learningLanguageRepository.deleteAll(learningLanguageList);
-            user.getLearningLanguages().clear();
-        }
-        List<Room> roomList = roomRepository.findAllByCreator(user);
-        if (!roomList.isEmpty()) {
-            roomRepository.deleteAll(roomList);
-            user.getCreatedRooms().clear();
-        }
-        List<Participant> participantList = participantRepository.findByUser(user);
-        if (!participantList.isEmpty()) {
-            participantRepository.deleteAll(participantList);
-        }
+
+        learningLanguageRepository.deleteByUser(user);
+        nativeLanguagesRepository.deleteByUser(user);
+        participantRepository.deleteByUser(user);
+        roomRepository.deleteByCreator(user);
+        notificationRepository.deleteByUserId(id);
         userRepository.delete(user);
         return String.format("User C ID %S successfully deleted", id);
     }

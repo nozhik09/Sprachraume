@@ -16,6 +16,17 @@ public class AdviceExceptionController {
         return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiExceptionHanding> forbiddenException (ForbiddenException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ApiExceptionHanding> notificationNotFoundException (NotificationNotFoundException e) {
+        return new ResponseEntity<>(new ApiExceptionHanding(e.getMessage(), HttpStatus.CONFLICT.toString()), HttpStatus.CONFLICT);
+    }
+
 
     @ExceptionHandler(UserHaveLowRatingException.class)
     public ResponseEntity<ApiExceptionHanding> userHaveLowRating (UserHaveLowRatingException e) {

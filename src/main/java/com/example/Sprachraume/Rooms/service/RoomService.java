@@ -1,11 +1,15 @@
 package com.example.Sprachraume.Rooms.service;
 
 
-import com.example.Sprachraume.Category.entity.Category;
 import com.example.Sprachraume.Category.CategoryRepository;
+import com.example.Sprachraume.Category.entity.Category;
 import com.example.Sprachraume.DailyRoomService.DailyRoomService;
 import com.example.Sprachraume.Exceptions.Exception.*;
 import com.example.Sprachraume.Mapping.Mapper;
+import com.example.Sprachraume.Notification.entity.Notification;
+import com.example.Sprachraume.Notification.entity.NotificationCategory;
+import com.example.Sprachraume.Notification.entity.NotificationContextType;
+import com.example.Sprachraume.Notification.repository.NotificationRepository;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantDTO;
 import com.example.Sprachraume.Participant.entity.ParticipantStatus;
@@ -22,9 +26,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.Period;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -35,11 +45,12 @@ public class RoomService {
     private final UserRepository userRepository;
     private final ParticipantRepository participantRepository;
     private final ModelMapper modelMapper;
+    private final NotificationRepository notificationRepository;
 
     private final DailyRoomService dailyRoomService;
     private final CategoryRepository categoryRepository;
 
-//+++
+    //+++
     public RoomFullDTO createdNewRoom(Long id, CreateNewRoomDTORequest room) {
         if (room.getMaxQuantity() == null) {
             throw new NullOrEmptyException("Max Quantity mast be not null");
@@ -108,18 +119,21 @@ public class RoomService {
         String dailyRoomUrl = dailyRoomService.createDailyRoom();
         newRoom.setRoomUrl(dailyRoomUrl);
         participantRepository.save(participant);
-         roomRepository.save(newRoom);
-        return Mapper.mapCreatedRooms(newRoom,userData);
+        roomRepository.save(newRoom);
+        return Mapper.mapCreatedRooms(newRoom, userData);
     }
 
 
     // админ комнаты приглашает юзера
+    @Transactional
     public ParticipantDTO inviteUserToRoom(Long userId, Long roomID) {
         Room room = roomRepository.findById(roomID)
                 .orElseThrow(() -> new RoomNotFoundException("There is no such room"));
 
         UserData user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        UserData creatorRoom = room.getCreator();
 
         if (user.getBirthdayDate() == null) {
             throw new UserBirthdayNotSetException("User does not have a birthday set");
@@ -140,7 +154,7 @@ public class RoomService {
                 participant.setStatus(ParticipantStatus.PENDING);
                 participant.setParticipantType(ParticipantType.INVITED_BY_CREATOR);
                 participantRepository.save(participant);
-                return modelMapper.map(participant,ParticipantDTO.class);
+                return modelMapper.map(participant, ParticipantDTO.class);
             } else {
                 throw new InvitationAlreadyRespondedException("User is already invited or participating");
             }
@@ -151,17 +165,28 @@ public class RoomService {
         participant.setUser(user);
         participant.setStatus(ParticipantStatus.PENDING);
         participant.setParticipantType(ParticipantType.INVITED_BY_CREATOR);
-         participantRepository.save(participant);
-        return modelMapper.map(participant,ParticipantDTO.class);
+        participantRepository.save(participant);
+
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setActorId(room.getCreator().getId());
+        notification.setCategory(NotificationCategory.INVITE_TO_ROOM);
+        notification.setTitle("User invite you to room " + room.getTopic());
+        notification.setBody("User invite you to room");
+        notification.setContextType(NotificationContextType.SENDER);
+        notification.setContextId(room.getId());
+
+        notificationRepository.save(notification);
+        return modelMapper.map(participant, ParticipantDTO.class);
     }
 
 
-
     //Пользователь принимает приглашение от адммина комнаты
+    @Transactional
     public ParticipantDTO acceptInvitationByUser(Long userId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
-        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId, roomId).orElseThrow(()
                 -> new UserNotFoundException("Participant not found with ID: " + userId));
 
 
@@ -172,26 +197,46 @@ public class RoomService {
         room.getParticipants().add(participant);
         room.setQuantityParticipant(room.getQuantityParticipant() + 1);
         roomRepository.save(room);
-
+        Notification notification = new Notification();
+        notification.setUserId(room.getCreator().getId());
+        notification.setActorId(userId);
+        notification.setCategory(NotificationCategory.ACCEPT_INVITE);
+        notification.setTitle("User accept your invite in room " + room.getTopic());
+        notification.setBody("User accept your invite");
+        notification.setContextType(NotificationContextType.RECIPIENT);
+        notification.setContextId(room.getId());
+        notificationRepository.save(notification);
         participantRepository.save(participant);
-        return modelMapper.map(participant,ParticipantDTO.class);
+        return modelMapper.map(participant, ParticipantDTO.class);
     }
 
     // Админ отправил приглашение, пользователь отклоняет
-    public ParticipantDTO declineInvitationByUser(Long userId,Long roomId) {
-        roomRepository.findById(roomId)
+    @Transactional
+    public ParticipantDTO declineInvitationByUser(Long userId, Long roomId) {
+        Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
-        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId, roomId).orElseThrow(()
                 -> new UserNotFoundException("Participant not found with ID: " + userId));
 
 
         participant.setStatus(ParticipantStatus.DECLINED);
-         participantRepository.save(participant);
-         return modelMapper.map(participant,ParticipantDTO.class);
+        participantRepository.save(participant);
+
+        Notification notification = new Notification();
+        notification.setUserId(room.getCreator().getId());
+        notification.setActorId(userId);
+        notification.setCategory(NotificationCategory.DECLINE_INVITE);
+        notification.setTitle("User decline your invite in room " + room.getTopic());
+        notification.setBody("User decline your invite");
+        notification.setContextType(NotificationContextType.RECIPIENT);
+        notification.setContextId(room.getId());
+        notificationRepository.save(notification);
+        return modelMapper.map(participant, ParticipantDTO.class);
     }
 
 
     // пользователь отправляем запрос на то что бы вступить в комнату
+    @Transactional
     public ParticipantDTO requestToJoinRoom(Long userId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found"));
@@ -216,11 +261,19 @@ public class RoomService {
         participant.setStatus(ParticipantStatus.PENDING);
         participant.setParticipantType(ParticipantType.REQUESTED_BY_USER);
         participantRepository.save(participant);
-//        Participant participant1 = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId);
 
+        Notification notification = new Notification();
+        notification.setUserId(room.getCreator().getId());
+        notification.setActorId(userId);
+        notification.setCategory(NotificationCategory.INVITE_TO_ROOM);
+        notification.setTitle("The user sent an application for participation in the meeting" + room.getTopic());
+        notification.setBody("he user sent an application for participation in the meeting");
+        notification.setContextType(NotificationContextType.SENDER);
+        notification.setContextId(room.getId());
 
+        notificationRepository.save(notification);
 
-        return modelMapper.map(participant,ParticipantDTO.class);
+        return modelMapper.map(participant, ParticipantDTO.class);
     }
 
 
@@ -271,28 +324,52 @@ public class RoomService {
 
 
     // админ подтверждает пришлашение
-    public ParticipantDTO acceptRequestByAdmin(Long userId,Long roomId) {
-        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+    @Transactional
+    public ParticipantDTO acceptRequestByAdmin(Long userId, Long roomId) {
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId, roomId).orElseThrow(()
                 -> new UserNotFoundException("Participant not found with ID: " + userId));
 
         Room room = roomRepository.findRoomByParticipants(participant);
+        if (participant.getStatus().equals(ParticipantStatus.ACCEPTED)){
+            throw new AlreadyUsedException("Вы уже приняли заявку от пользователя");
+        }
+
         room.setQuantityParticipant(room.getQuantityParticipant() + 1L);
         participant.setStatus(ParticipantStatus.ACCEPTED);
-         participantRepository.save(participant);
-         return Mapper.mapParticipant(participant);
+        participantRepository.save(participant);
+
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setActorId(room.getCreator().getId());
+        notification.setCategory(NotificationCategory.ACCEPT_INVITE);
+        notification.setTitle("RoomAdmin accept your invite in room" + room.getTopic());
+        notification.setBody("RoomAdmin accept your invite in room");
+        notification.setContextType(NotificationContextType.SENDER);
+        notification.setContextId(room.getId());
+        notificationRepository.save(notification);
+        return Mapper.mapParticipant(participant);
     }
 
 
     // админ отклоняет пришлашение
+    @Transactional
     public ParticipantDTO declineRequestByAdmin(Long userId, Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + roomId));
-        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId,roomId).orElseThrow(()
+        Participant participant = participantRepository.findParticipantByUserIdAndRoomId(userId, roomId).orElseThrow(()
                 -> new UserNotFoundException("Participant not found with ID: " + userId));
-
         participant.setStatus(ParticipantStatus.DECLINED);
-       participantRepository.save(participant);
-       return Mapper.mapParticipant(participant);
+        participantRepository.save(participant);
+        Notification notification = new Notification();
+        notification.setUserId(userId);
+        notification.setActorId(room.getCreator().getId());
+        notification.setCategory(NotificationCategory.DECLINE_INVITE);
+        notification.setTitle("RoomAdmin accept your invite in room" + room.getTopic());
+        notification.setBody("RoomAdmin accept your invite in room");
+        notification.setContextType(NotificationContextType.SENDER);
+        notification.setContextId(room.getId());
+        notificationRepository.save(notification);
+        return Mapper.mapParticipant(participant);
     }
 
 
@@ -335,7 +412,7 @@ public class RoomService {
                 ParticipantStatus.PENDING
         ).stream().map(Participant::getRoom).toList();
 
-       return pendingParticipants.stream().map(Mapper::mapToRooms).collect(Collectors.toList());
+        return pendingParticipants.stream().map(Mapper::mapToRooms).collect(Collectors.toList());
     }
 
 
@@ -375,10 +452,9 @@ public class RoomService {
                 .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (userData.getBirthdayDate()==null && room.getAge()!=0){
+        if (userData.getBirthdayDate() == null && room.getAge() != 0) {
             throw new NullOrEmptyException("Вам нужно указать свой возраст");
         }
-
         int userAge = calculateAge(userData.getBirthdayDate(), LocalDate.now());
 
         if (room.getAge() != null && userAge < room.getAge()) {
@@ -418,7 +494,6 @@ public class RoomService {
     }
 
 
-
     public List<RoomParticipationDTO> getAllRoomByUser(Long userId) {
         List<Participant> participants = participantRepository.findByUserId(userId);
 
@@ -456,7 +531,7 @@ public class RoomService {
 
     public RoomFullDTO getRoom(Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Комната не найдена"));
-       return Mapper.mapToRooms(room);
+        return Mapper.mapToRooms(room);
     }
 
     public List<RoomFullDTO> getAllRoom() {
@@ -466,7 +541,6 @@ public class RoomService {
     public List<RoomFullDTO> findAllRoomsByCreator(Long userId) {
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-
 
 
         return roomRepository.findRoomsByCreator(userData).stream().map(Mapper::mapToRooms).collect(Collectors.toList());

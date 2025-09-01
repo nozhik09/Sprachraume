@@ -6,6 +6,8 @@ import com.example.Sprachraume.Participant.entity.ParticipantType;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.UserData;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,5 +26,9 @@ public interface ParticipantRepository extends JpaRepository<Participant,Long> {
 
     List<Participant> findByUserIdAndStatus(Long id, ParticipantStatus participantStatus);
     List<Participant> findAllParticipantByRoom(Room room);
+
+    @Modifying
+    @Transactional
+    void deleteByUser(UserData user);
 
 }
