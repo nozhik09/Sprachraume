@@ -5,6 +5,7 @@ import com.example.Sprachraume.Languages.entity.LearningLanguage;
 import com.example.Sprachraume.Languages.entity.NativeLanguages;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantDTO;
+import com.example.Sprachraume.Rooms.entity.DTO.CreatorInRoomDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
@@ -79,7 +80,14 @@ public class Mapper {
         dto.setStatus(room.getStatus());
         dto.setRoomUrl(room.getRoomUrl());
         dto.setCategoryName(room.getCategory() != null ? room.getCategory().getName() : null);
-        dto.setCreator(room.getCreator().getId());
+        CreatorInRoomDTO creator = new CreatorInRoomDTO();
+        creator.setCreator(room.getCreator().getId());
+        creator.setCreatorNickName(room.getCreator().getNickname());
+        creator.setCreatorName(room.getCreator().getName());
+        creator.setCreatorSurname(room.getCreator().getSurname());
+        creator.setCreatorAvatar(room.getCreator().getAvatar());
+        creator.setCreatorRating(room.getCreator().getRating());
+        dto.setCreator(creator);
         dto.setParticipants(room.getParticipants().stream().map(Participant::getId).collect(Collectors.toSet()));
         return dto;
 
@@ -113,10 +121,17 @@ public class Mapper {
         dto.setQuantityParticipant(room.getQuantityParticipant());
         dto.setStatus(room.getStatus());
         dto.setRoomUrl(room.getRoomUrl());
-        dto.setCreator(room.getCreator().getId());
         dto.setCountOnlineUser(room.getCountOnlineUser());
         dto.setCategoryName(room.getCategory() != null ? room.getCategory().getName() : null);
         dto.setParticipants(room.getParticipants().stream().map(Participant::getId).collect(Collectors.toSet()));
+        CreatorInRoomDTO creator = new CreatorInRoomDTO();
+        creator.setCreator(room.getCreator().getId());
+        creator.setCreatorNickName(room.getCreator().getNickname());
+        creator.setCreatorName(room.getCreator().getName());
+        creator.setCreatorSurname(room.getCreator().getSurname());
+        creator.setCreatorAvatar(room.getCreator().getAvatar());
+        creator.setCreatorRating(room.getCreator().getRating());
+        dto.setCreator(creator);
         return dto;
     }
 
@@ -138,6 +153,8 @@ public class Mapper {
         languageResponseDTO.setSkillLvl(languages.getSkillLevel());
         return languageResponseDTO;
     }
+
+
 
 
 

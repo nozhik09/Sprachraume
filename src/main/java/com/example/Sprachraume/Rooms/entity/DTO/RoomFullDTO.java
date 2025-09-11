@@ -31,7 +31,13 @@ public class RoomFullDTO {
     private Boolean status;
     private String roomUrl;
     private String categoryName;
-    private Long creator;
+    private CreatorInRoomDTO creator;
+//    private Long creator;
+//    private String creatorNickName;
+//    private String creatorName;
+//    private String creatorSurname;
+//    private String creatorAvatar;
+//    private double creatorRating;
     private Set<Long> participants;
     private Long countOnlineUser;
 }
