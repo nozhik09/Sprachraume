@@ -37,6 +37,7 @@ import java.time.Period;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -469,8 +470,8 @@ public class RoomService {
             roomRepository.save(room);
         }
 
-        List<UserFullResponseDto> list = room.getRoomOnlineUsers().stream().map(Mapper::userToFullResponseDto)
-                .collect(Collectors.toList());
+        Set<Long> list = room.getRoomOnlineUsers().stream().map(UserData::getId)
+                .collect(Collectors.toSet());
 
         return new OnlineUsersResponseDTO(list, room.getCountOnlineUser());
     }
@@ -487,10 +488,10 @@ public class RoomService {
             roomRepository.save(room);
         }
 
-        List<UserFullResponseDto> list = room.getRoomOnlineUsers()
+        Set<Long> list = room.getRoomOnlineUsers()
                 .stream()
-                .map(Mapper::userToFullResponseDto)
-                .collect(Collectors.toList());
+                .map(UserData::getId)
+                .collect(Collectors.toSet());
 
         return new OnlineUsersResponseDTO(list, room.getCountOnlineUser());
     }

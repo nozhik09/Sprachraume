@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OnlineUsersResponseDTO {
-    private List<UserFullResponseDto> users;
+    private Set<Long> users;
     private Long count;
 
 }
