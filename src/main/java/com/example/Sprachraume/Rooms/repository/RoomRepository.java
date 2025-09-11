@@ -3,6 +3,8 @@ package com.example.Sprachraume.Rooms.repository;
 import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.UserData.entity.UserData;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -34,4 +36,6 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
     @Modifying
     @Transactional
     void deleteByCreator(UserData userData);
+
+    Page<Room> findAllByStatus(boolean status , Pageable pageable);
 }

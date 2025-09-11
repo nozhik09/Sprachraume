@@ -24,6 +24,8 @@ import com.example.Sprachraume.UserData.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -544,6 +546,11 @@ public class RoomService {
 
 
         return roomRepository.findRoomsByCreator(userData).stream().map(Mapper::mapToRooms).collect(Collectors.toList());
+    }
+
+    //TODO Как сортировать комнаты?
+    public Page<RoomFullDTO> getAllRoomByStatus(boolean status,int page,int size){
+     return roomRepository.findAllByStatus(status, PageRequest.of(page,size)).map(Mapper::mapToRooms);
     }
 
 

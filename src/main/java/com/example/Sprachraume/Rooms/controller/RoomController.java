@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,9 +108,6 @@ public class RoomController {
         return roomService.getPendingInvitationsReceivedByUser(userId);
     }
 
-
-
-
     @Operation(summary = "Extend room end time", description = "Продлить время окончания определенной комнаты")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room time extended", content = @Content(mediaType = "application/json")),
@@ -150,7 +148,6 @@ public class RoomController {
         return roomService.getPendingRequestsSentByUsers(creatorId, roomId);
     }
 
-
     @Operation(summary = "Get accepted invitations", description = "Администратор получает список пользователей, которые приняли его приглашения")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Accepted invites retrieved", content = @Content(mediaType = "application/json")),
@@ -161,7 +158,6 @@ public class RoomController {
         return roomService.getAcceptedInviteByAdmin(creatorId, roomId);
     }
 
-
     @Operation(summary = "Accept join request", description = "Администратор принимает запрос пользователя присоединиться к комнате")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Request accepted", content = @Content(mediaType = "application/json")),
@@ -171,7 +167,6 @@ public class RoomController {
     public ParticipantDTO acceptRequestByAdmin(@RequestParam Long userId, @RequestParam Long roomId) {
         return roomService.acceptRequestByAdmin(userId,roomId);
     }
-
 
     @Operation(summary = "Decline join request", description = "Администратор отказывает от запроса пользователя присоединиться к комнате")
     @ApiResponses(value = {
@@ -194,8 +189,6 @@ public class RoomController {
         return roomService.getAllRoom();
     }
 
-
-
     @Operation(summary = "Отфильтровать комнаты по нескольким параметрам(Язык,статус комнаты,минимальный возраст, категория", description = "Получить список комнат по фильтрам")
     @GetMapping("/filter")
     public List<RoomFullDTO> filterRooms(
@@ -206,8 +199,6 @@ public class RoomController {
     ) {
         return roomService.filterRooms(language, status, minAge,category);
     }
-
-
 
     @PostMapping("/online")
     public ResponseEntity<OnlineUsersResponseDTO> plusOnline(@RequestParam Long userId, @RequestParam Long roomId) {
@@ -220,18 +211,11 @@ public class RoomController {
         return ResponseEntity.ok(roomService.minusOnline(userId, roomId));
     }
 
-
-
-
     @Operation(summary = "показать все комнаты в которых участвовал или будет пользователь")
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
     }
-
-
-
-
 
     @Operation(summary = "Get a room by ID", description = "Retrieve a specific room by its ID")
     @ApiResponses(value = {
@@ -242,6 +226,13 @@ public class RoomController {
     public RoomFullDTO getRoom(@RequestParam Long roomId) {
         return roomService.getRoom(roomId);
     }
+
+
+    @GetMapping("/active")
+    public Page<RoomFullDTO> getAllRoomByStatus(@RequestParam boolean status,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size){
+        return roomService.getAllRoomByStatus(status, page, size);
+    }
+
 
 
     // @GetMapping("/allRoom")
