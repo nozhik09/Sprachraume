@@ -30,13 +30,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		servers = {
 				@Server(
 						url = "https://sprachraume-production.up.railway.app/api",
-						description = "Production server"
+						description = "UNIQUE_SWAGGER_TEST_999"
 				)
 		}
 )
 public class SprachraumeApplication {
 
 	public static void main(String[] args) {
+		System.out.println("=== START UNIQUE_SWAGGER_TEST_999 ===");
 		SpringApplication.run(SprachraumeApplication.class, args);
 	}
 }
+
