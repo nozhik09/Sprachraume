@@ -12,6 +12,8 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        System.out.println("=== OpenApiConfig loaded ===");
+
         return new OpenAPI()
                 .servers(List.of(
                         new Server()
