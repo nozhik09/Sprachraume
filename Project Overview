@@ -1,4 +1,0 @@
-This is a backend application built with Spring Boot that allows users to create and join discussion rooms.  
-Each room is scheduled for a specific time and opens only when a minimum number of participants is reached.
-
-The project is designed as a platform for improving language skills through communication.
