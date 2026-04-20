@@ -15,13 +15,10 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
-    Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable p);
-    Page<Notification> findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId, Pageable p);
     @Modifying
     @Query("update Notification n set n.isRead = true where n.userId = :userId and n.isRead = false")
     int markAllRead(@Param("userId") Long userId);
     Page<Notification> findAllByUserId(Long userId,Pageable pageable);
-    List<Notification> findAllByActorId(Long actorId);
 
     Page<Notification> findAllByUserIdAndIsRead(Long userId, boolean isRead,Pageable pageable);
     @Modifying

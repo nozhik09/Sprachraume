@@ -22,20 +22,20 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @Operation(summary = "Залогиниться", description = "Доступно всем заоегистрированым пользователям")
+    @Operation(summary = "Log in", description = "Available to all registered users")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Авторизация прошла успешно"),
-            @ApiResponse(responseCode = "422", description = "Не пройдена валидация имейл", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "200", description = "Authorization was successful"),
+            @ApiResponse(responseCode = "422", description = "Email validation failed", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class))),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "404", description = "USER NOT FOUND", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class))),
-            @ApiResponse(responseCode = "403", description = "Пользователь заблокирован", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "403", description = "User is blocked", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class))),
-            @ApiResponse(responseCode = "400", description = "Вы ввели неверный пароль", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "400", description = "You entered the wrong password", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class))),
-            @ApiResponse(responseCode = "400", description = "Пустой имеил или null", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "400", description = "Empty email or null", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class))),
-            @ApiResponse(responseCode = "422", description = "Не пройдена валидация пароля", content = @Content(mediaType = "application/json",
+            @ApiResponse(responseCode = "422", description = "Password validation failed", content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ApiExceptionHanding.class)))})
 
 
@@ -57,17 +57,17 @@ public class AuthController {
 
     @GetMapping("/login/google")
     public String login() {
-        return "login"; // Верните страницу с кнопкой для входа через Google
+        return "login";
     }
 
     @GetMapping("/register/google")
     public String register() {
-        return "register"; // Верните страницу с кнопкой для регистрации через Google
+        return "register";
     }
 
     @GetMapping("/home")
     public String home() {
-        return "home"; // Главная страница после успешного входа
+        return "home";
     }
 
 

@@ -54,13 +54,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/room").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/id").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/allRoom").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "room/participant/invite/accept").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "room/participant/invite/decline").permitAll()
-                        .requestMatchers(HttpMethod.POST, "room/participant/invite/sendInvitation").permitAll()
-                        .requestMatchers(HttpMethod.GET, "room/participant/invite/getAccept").permitAll()
-                        .requestMatchers(HttpMethod.GET, "room/participant/invite/getPending").permitAll()
-                        .requestMatchers(HttpMethod.GET, "room/participant/invite/received").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "room/extendTime").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/room/participant/invite/accept").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/room/participant/invite/decline").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/room/participant/invite/sendInvitation").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/room/participant/invite/getAccept").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/room/participant/invite/getPending").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/room/participant/invite/received").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/room/extendTime").permitAll()
                         .requestMatchers(HttpMethod.POST, "/room/adminRoom/invite").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/adminRoom/checkPendingInvite").permitAll()
                         .requestMatchers(HttpMethod.GET, "/room/adminRoom/invite/participant").permitAll()
@@ -103,8 +103,12 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // Разрешаем доступ с вашего React приложения
+        corsConfiguration.addAllowedOrigin("http://sprachraume-production.up.railway.app");
+        corsConfiguration.addAllowedOrigin("https://sprachraume-production.up.railway.app");
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

@@ -38,16 +38,16 @@ public class AuthService {
 
         String email = requestDTO.getEmail();
         if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Имеил не может быть пустым");
+            throw new IllegalArgumentException("Email cannot be empty");
         }
         if (!isValidEmail(email)) {
-            throw new EmailIsNotValidException(String.format("Вам имеил %s не корректно введен", email));
+            throw new EmailIsNotValidException(String.format("Your email %s was entered incorrectly", email));
         }
         UserData foundUser = (UserData) userService.loadUserByUsername(email);
         if (!foundUser.getStatus()) {
-            throw new UserIsBlockingException("Пользователь заблоктирован");
+            throw new UserIsBlockingException("User is blocked");
         } else if (!isValidPassword(requestDTO.getPassword())) {
-            throw new PasswordIsNotValidException("Пароль должен содержать 8 симоволов,1 спец знак , заглавную букву и 1 цифру");
+            throw new PasswordIsNotValidException("The password must contain 8 characters, 1 special character, a capital letter and 1 number");
         } else if (bCryptPasswordEncoder.matches(requestDTO.getPassword(), foundUser.getPassword())) {
 
             String accessToken = tokenService.generateAccessToken(foundUser);
@@ -57,7 +57,7 @@ public class AuthService {
 
             return Mapper.mapToLoginResponseDTO(foundUser,accessToken,refreshToken);
         }else{
-            throw new InvalidPasswordException("Вы ввели неверный пароль");
+            throw new InvalidPasswordException("You entered the wrong password");
         }
     }
 

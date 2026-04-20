@@ -5,7 +5,6 @@ import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
 import com.example.Sprachraume.UserData.entity.DTO.UserFullResponseDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserRequestDto;
 import com.example.Sprachraume.UserData.entity.DTO.UserUpdateRequestDto;
-import com.example.Sprachraume.UserData.entity.UserData;
 import com.example.Sprachraume.UserData.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
