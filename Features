@@ -4,3 +4,4 @@
 - Integrated PostgreSQL database using Hibernate/JPA
 - Structured application using layered architecture (Controller, Service, Repository)
 - Handled JSON serialization issues using DTO pattern
+- Deployed application to Railway with PostgreSQL database
