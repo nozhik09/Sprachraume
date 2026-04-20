@@ -1,7 +1,0 @@
-- Implemented user registration and authentication using Spring Security
-- Designed and developed RESTful APIs for managing discussion rooms
-- Built business logic for room creation with minimum participant validation
-- Integrated PostgreSQL database using Hibernate/JPA
-- Structured application using layered architecture (Controller, Service, Repository)
-- Handled JSON serialization issues using DTO pattern
-- Deployed application to Railway with PostgreSQL database
