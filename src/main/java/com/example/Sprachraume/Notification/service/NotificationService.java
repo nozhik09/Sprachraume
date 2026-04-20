@@ -65,18 +65,6 @@ public class NotificationService {
 
 
 
-
-    //    public void addMessageNotif(Long recipientId, Long senderId, Long messageId, String preview) {
-//        var n = new Notification();
-//        n.setUserId(recipientId);
-//        n.setActorId(senderId);
-//        n.setCategory(NotificationCategory.MESSAGE);
-//        n.setTitle("Новое сообщение");
-//        n.setBody(preview);
-//        n.setContextType("MESSAGE");
-//        n.setContextId(messageId);
-//        notificationRepository.save(n);
-//    }
     public void addSystemNotif(Long userId, String title, String body) {
         var n = new Notification();
         n.setUserId(userId);
@@ -85,12 +73,5 @@ public class NotificationService {
         n.setBody(body);
         notificationRepository.save(n);
     }
-
-//    public List<Notification> getAllNotifByActorId(Long actorId){
-//        UserData user = userRepository.findById(actorId)
-//                .orElseThrow(() -> new UserNotFoundException("User not found"));
-//
-//        return   notificationRepository.findAllByActorId(actorId);
-//    }
 
 }

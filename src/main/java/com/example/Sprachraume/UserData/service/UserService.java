@@ -84,7 +84,7 @@ public class UserService implements UserDetailsService {
 
         String roleTitle = requestDto.getRole();
         if (!roleTitle.equals("ROLE_USER") && !roleTitle.equals("ROLE_LIBRARY")) {
-            throw new InvalidRoleException("Недопустимая роль: " + roleTitle);
+            throw new InvalidRoleException("Invalid role: " + roleTitle);
         }
 
         Role role = roleRepository.findByTitle(roleTitle);
@@ -290,7 +290,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(String.format("Пользователь %s не найден", email)));
+                new UserNotFoundException(String.format("User %s not found", email)));
     }
 
     private boolean isValidEmail(String email) {

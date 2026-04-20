@@ -16,13 +16,13 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Operation(summary = "Новая категория ", description = "Добавить новую категорию")
+    @Operation(summary = "New category", description = "Add a new category")
     @PostMapping("/add")
     public Category addCategory(@RequestParam Long userId, @RequestParam String name){
         return categoryService.addCategory(userId, name);
     }
 
-    @Operation(summary = "Все существующие категории  ", description = "Получить список всех категорий")
+    @Operation(summary = "All existing categories", description = "Get a list of all categories")
     @GetMapping("/allCategory")
     public List<Category> getAllCategory() {
         return categoryService.getAllCategory();

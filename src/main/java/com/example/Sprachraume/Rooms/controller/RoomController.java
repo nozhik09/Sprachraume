@@ -2,13 +2,11 @@ package com.example.Sprachraume.Rooms.controller;
 
 
 import com.example.Sprachraume.Exceptions.ApiExceptionHanding;
-import com.example.Sprachraume.Participant.entity.Participant;
 import com.example.Sprachraume.Participant.entity.ParticipantDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.CreateNewRoomDTORequest;
 import com.example.Sprachraume.Rooms.entity.DTO.OnlineUsersResponseDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.RoomFullDTO;
 import com.example.Sprachraume.Rooms.entity.DTO.RoomParticipationDTO;
-import com.example.Sprachraume.Rooms.entity.Room;
 import com.example.Sprachraume.Rooms.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -88,7 +86,7 @@ public class RoomController {
         return roomService.getAcceptedRoomsByUser(userId);
     }
 
-    @Operation(summary = "Get pending room join requests sent by user", description = "Получите комнаты, где пользователь отправил запрос на присоединениеt")
+    @Operation(summary = "Get pending room join requests sent by user", description = "Get the rooms where the user sent a request to join")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pending invitations retrieved", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -98,7 +96,7 @@ public class RoomController {
         return roomService.getPendingInvitationsByUser(userId);
     }
 
-    @Operation(summary = "Get invitations received by user", description = "Получите все приглашения на комнату, полученные пользователем")
+    @Operation(summary = "Get invitations received by user", description = "Get all room invitations received by a user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pending invitations received", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -108,7 +106,7 @@ public class RoomController {
         return roomService.getPendingInvitationsReceivedByUser(userId);
     }
 
-    @Operation(summary = "Extend room end time", description = "Продлить время окончания определенной комнаты")
+    @Operation(summary = "Extend room end time", description = "Extend the end time of a certain room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Room time extended", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -118,7 +116,7 @@ public class RoomController {
         return roomService.extendTime(roomId, endTime);
     }
 
-    @Operation(summary = "Invite user to room", description = "Администратор приглашает пользователя в определенную комнату")
+    @Operation(summary = "Invite user to room", description = "The administrator invites a user to a specific room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User invited", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "User or Room not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -128,7 +126,7 @@ public class RoomController {
         return roomService.inviteUserToRoom(userId, roomId);
     }
 
-    @Operation(summary = "Get pending invitations sent by admin", description = "Получите все ожидающие приглашения, отправленные Room Admin")
+    @Operation(summary = "Get pending invitations sent by admin", description = "Retrieve all pending invitations sent by Room Admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pending invites retrieved", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -138,7 +136,7 @@ public class RoomController {
         return roomService.getPendingInviteByAdmin(creatorId, roomId);
     }
 
-    @Operation(summary = "Get pending join requests from users", description = "Получите запросы пользователя присоединиться к комнате")
+    @Operation(summary = "Get pending join requests from users", description = "Receive user requests to join a room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Requests retrieved", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -148,7 +146,7 @@ public class RoomController {
         return roomService.getPendingRequestsSentByUsers(creatorId, roomId);
     }
 
-    @Operation(summary = "Get accepted invitations", description = "Администратор получает список пользователей, которые приняли его приглашения")
+    @Operation(summary = "Get accepted invitations", description = "The administrator receives a list of users who accepted his invitations")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Accepted invites retrieved", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Room not found or access denied", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -158,7 +156,7 @@ public class RoomController {
         return roomService.getAcceptedInviteByAdmin(creatorId, roomId);
     }
 
-    @Operation(summary = "Accept join request", description = "Администратор принимает запрос пользователя присоединиться к комнате")
+    @Operation(summary = "Accept join request", description = "The administrator accepts the user's request to join the room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Request accepted", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -168,7 +166,7 @@ public class RoomController {
         return roomService.acceptRequestByAdmin(userId,roomId);
     }
 
-    @Operation(summary = "Decline join request", description = "Администратор отказывает от запроса пользователя присоединиться к комнате")
+    @Operation(summary = "Decline join request", description = "Administrator refuses user's request to join the room")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Request declined", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Participant not found", content = @Content(schema = @Schema(implementation = ApiExceptionHanding.class)))
@@ -183,13 +181,13 @@ public class RoomController {
         return roomService.findAllRoomsByCreator(userId);
     }
 
-    @Operation(summary = "Все созданыекомнаты", description = "Получить список всех доступных комнат")
+    @Operation(summary = "All created rooms", description = "Get a list of all available rooms")
     @GetMapping("/allRoom")
     public List<RoomFullDTO> getAllRoom() {
         return roomService.getAllRoom();
     }
 
-    @Operation(summary = "Отфильтровать комнаты по нескольким параметрам(Язык,статус комнаты,минимальный возраст, категория", description = "Получить список комнат по фильтрам")
+    @Operation(summary = "Filter rooms by several parameters (Language, room status, minimum age, category", description = "Get a list of rooms by filters")
     @GetMapping("/filter")
     public List<RoomFullDTO> filterRooms(
             @RequestParam(required = false) String language,
@@ -211,7 +209,7 @@ public class RoomController {
         return ResponseEntity.ok(roomService.minusOnline(userId, roomId));
     }
 
-    @Operation(summary = "показать все комнаты в которых участвовал или будет пользователь")
+    @Operation(summary = "Show all rooms in which the user has participated or will be")
     @GetMapping("/roomStatus")
     public List<RoomParticipationDTO> getAllRoomByUser(@RequestParam Long userId){
         return roomService.getAllRoomByUser(userId);
@@ -227,16 +225,9 @@ public class RoomController {
         return roomService.getRoom(roomId);
     }
 
-
     @GetMapping("/active")
     public Page<RoomFullDTO> getAllRoomByStatus(@RequestParam boolean status,@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size){
         return roomService.getAllRoomByStatus(status, page, size);
     }
 
-
-
-    // @GetMapping("/allRoom")
-//    public List<Room> getAllParticipantRoom(@RequestParam Long participantId) {
-//        return roomService.getAllParticipantRoom(participantId);
-//    }
 }

@@ -248,7 +248,7 @@ public class RoomService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (calculateAge(user.getBirthdayDate(), LocalDate.now()) < room.getAge()) {
-            throw new UserTooYoungException("Вы не прошли проверку на возраст");
+            throw new UserTooYoungException("You have not passed the age check");
 
         }
 
@@ -334,7 +334,7 @@ public class RoomService {
 
         Room room = roomRepository.findRoomByParticipants(participant);
         if (participant.getStatus().equals(ParticipantStatus.ACCEPTED)){
-            throw new AlreadyUsedException("Вы уже приняли заявку от пользователя");
+            throw new AlreadyUsedException("You have already accepted a request from a user");
         }
 
         room.setQuantityParticipant(room.getQuantityParticipant() + 1L);
@@ -452,16 +452,16 @@ public class RoomService {
 
     public OnlineUsersResponseDTO plusOnline(Long userId, Long roomId) {
         Room room = roomRepository.findRoomWithOnlineUsers(roomId)
-                .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+                .orElseThrow(() -> new RoomNotFoundException("This room doesn't exist"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         if (userData.getBirthdayDate() == null && room.getAge() != 0) {
-            throw new NullOrEmptyException("Вам нужно указать свой возраст");
+            throw new NullOrEmptyException("You need to indicate your age");
         }
         int userAge = calculateAge(userData.getBirthdayDate(), LocalDate.now());
 
         if (room.getAge() != null && userAge < room.getAge()) {
-            throw new UserTooYoungException("Вы не прошли проверку на возраст");
+            throw new UserTooYoungException("You have not passed the age check");
         }
 
         if (!room.getRoomOnlineUsers().contains(userData)) {
@@ -479,7 +479,7 @@ public class RoomService {
 
     public OnlineUsersResponseDTO minusOnline(Long userId, Long roomId) {
         Room room = roomRepository.findRoomWithOnlineUsers(roomId)
-                .orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+                .orElseThrow(() -> new RoomNotFoundException("This room doesn't exist"));
         UserData userData = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -523,7 +523,7 @@ public class RoomService {
 
 
     public RoomFullDTO extendTime(Long roomId, OffsetDateTime endTime) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Такой комнаты не существует"));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("This room doesn't exist"));
 
         if (room.getStatus()) {
             room.setEndTime(endTime);
@@ -533,7 +533,7 @@ public class RoomService {
 
 
     public RoomFullDTO getRoom(Long roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Комната не найдена"));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomNotFoundException("Room not found"));
         return Mapper.mapToRooms(room);
     }
 
@@ -553,12 +553,6 @@ public class RoomService {
     public Page<RoomFullDTO> getAllRoomByStatus(boolean status,int page,int size){
      return roomRepository.findAllByStatus(status, PageRequest.of(page,size)).map(Mapper::mapToRooms);
     }
-
-
-//    public List<Room> getAllParticipantRoom(Long participantId) {
-//        return roomRepository.findRoomByParticipantsId(participantId);
-//    }
-
 
     private int calculateAge(LocalDate birthday, LocalDate currentDate) {
         if ((birthday != null) && (currentDate != null)) {
