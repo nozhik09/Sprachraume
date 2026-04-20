@@ -30,7 +30,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     @Operation(summary = "User registration", description = "Available to everyone")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
@@ -50,7 +49,6 @@ public class UserController {
         return userService.registerNewUser(requestDto);
     }
 
-
     @Operation(summary = "Get All Users", description = "Available to Admin")
     @GetMapping
     public List<UserFullResponseDto> getAllUsers() {
@@ -68,7 +66,6 @@ public class UserController {
     public UserFullResponseDto getUserById(@PathVariable(name = "id") Long id) {
         return userService.gitUserById(id);
     }
-
 
     @Operation(summary = "Update user data", description = "User/Admin")
     @ApiResponses(value = {
@@ -119,7 +116,6 @@ public class UserController {
     public List<UserFullResponseDto> getUserByRating(@RequestParam Double rating) {
         return userService.getUsersByRating(rating);
     }
-
     @GetMapping("/findAnyUsers")
     public List<UserFullResponseDto> searchUsers(@RequestParam String keyword) {
         return userService.searchUsers(keyword);
@@ -140,7 +136,6 @@ public class UserController {
         String avatarUrl = userService.uploadAvatar(userId, file);
         return ResponseEntity.ok("Uploaded successfully. URL: " + avatarUrl);
     }
-
 
     @Operation(
             summary = "Get user avatar by userId",
